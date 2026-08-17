@@ -2,6 +2,7 @@
   "expo": {
     "name": "Peppe Manager",
     "slug": "peppe-manager-mobile",
+    "owner": "fha_s",
     "version": "0.1.0",
     "orientation": "portrait",
     "scheme": "peppe",
@@ -25,6 +26,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "19bc5953-f9b5-44b3-b9b6-619421d95476"
+      }
     }
   }
 }
