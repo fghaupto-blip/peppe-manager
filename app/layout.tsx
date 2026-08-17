@@ -15,6 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <nav className="global-nav" aria-label="Navegación principal">
           <Link href="/">Inicio</Link>
           <Link href="/study">Estudio</Link>
+          <Link href="/body">Cuerpo</Link>
         </nav>
       </body>
     </html>
