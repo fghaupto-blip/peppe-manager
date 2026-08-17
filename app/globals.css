@@ -6,13 +6,14 @@
 
 * { box-sizing: border-box; }
 html { background: #f5f7fb; }
-body { margin: 0; background: #f5f7fb; }
+body { margin: 0; background: #f5f7fb; padding-bottom: 78px; }
 button, input, select, textarea { font: inherit; }
 button { border: 0; border-radius: 12px; padding: 12px 16px; font-weight: 800; cursor: pointer; }
 button:disabled { opacity: 0.55; cursor: not-allowed; }
 input, select, textarea { width: 100%; border: 1px solid #d9dee7; background: #fff; border-radius: 12px; padding: 12px 13px; color: #111827; outline: none; }
 input:focus, select:focus, textarea:focus { border-color: #111827; box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06); }
 textarea { min-height: 92px; resize: vertical; }
+a { color: inherit; }
 
 .shell { max-width: 1080px; margin: 0 auto; padding: 32px 20px 48px; }
 .shell.narrow { max-width: 850px; }
@@ -25,6 +26,7 @@ textarea { min-height: 92px; resize: vertical; }
 .ghost { background: #fff; border: 1px solid #e2e6ed; color: #374151; }
 .primary { background: #111827; color: #fff; margin-top: 16px; }
 .wide { width: 100%; }
+.link-button { display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border-radius: 12px; text-decoration: none; font-weight: 800; }
 
 .grid { display: grid; gap: 16px; }
 .scores { grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; }
@@ -75,6 +77,40 @@ footer { text-align: center; color: #89919d; font-size: 12px; padding-top: 28px;
 .loader-card strong { letter-spacing: .16em; }
 .loader-card p { color: #727b88; }
 
+.global-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(218, 223, 231, .95);
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  box-shadow: 0 12px 34px rgba(17,24,39,.14);
+}
+.global-nav a { text-decoration: none; font-size: 13px; font-weight: 850; padding: 10px 18px; border-radius: 12px; color: #4b5563; }
+.global-nav a:hover { background: #f1f3f6; color: #111827; }
+
+.study-shell { max-width: 1180px; }
+.study-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+.study-stat strong { display: block; margin: 12px 0 7px; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.04em; }
+.study-stat small { color: #78818f; line-height: 1.4; }
+.study-forms { grid-template-columns: .8fr 1.2fr; }
+.libre-import { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 16px; }
+.libre-import > div { max-width: 690px; }
+.upload-button { display: inline-flex; align-items: center; justify-content: center; min-width: 210px; background: #111827; color: white; padding: 13px 17px; border-radius: 12px; font-weight: 850; cursor: pointer; text-align: center; }
+.upload-button input { display: none; }
+.study-explainer { margin-top: 16px; }
+
+@media (max-width: 900px) {
+  .study-summary { grid-template-columns: repeat(2, 1fr); }
+  .study-forms { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 820px) {
   .auth-shell { grid-template-columns: 1fr; }
   .auth-brand { padding: 40px 22px 18px; }
@@ -82,6 +118,8 @@ footer { text-align: center; color: #89919d; font-size: 12px; padding-top: 28px;
   .auth-card { margin: 18px auto 32px; width: calc(100% - 28px); }
   .scores { grid-template-columns: repeat(2, 1fr); }
   .content { grid-template-columns: 1fr; }
+  .libre-import { align-items: stretch; flex-direction: column; }
+  .upload-button { width: 100%; }
 }
 
 @media (max-width: 620px) {
@@ -93,4 +131,9 @@ footer { text-align: center; color: #89919d; font-size: 12px; padding-top: 28px;
   .score strong { font-size: 40px; }
   .card { border-radius: 18px; padding: 18px; }
   .auth-card { border-radius: 20px; padding: 22px; }
+  .study-summary { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .study-stat { padding: 16px; }
+  .study-stat strong { font-size: 26px; }
+  .global-nav { width: calc(100% - 28px); justify-content: center; }
+  .global-nav a { flex: 1; text-align: center; }
 }
