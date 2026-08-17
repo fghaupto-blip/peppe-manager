@@ -1,0 +1,23 @@
+{
+  "cli": {
+    "version": ">= 18.0.1"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": { "image": "latest" },
+      "ios": { "image": "latest" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": { "image": "latest" },
+      "ios": { "image": "latest" }
+    },
+    "production": {
+      "autoIncrement": true,
+      "android": { "image": "latest" },
+      "ios": { "image": "latest" }
+    }
+  }
+}
