@@ -18,12 +18,6 @@
       "expo-router",
       "expo-dev-client",
       [
-        "expo-notifications",
-        {
-          "defaultChannel": "peppe"
-        }
-      ],
-      [
         "@kingstinct/react-native-healthkit",
         {
           "NSHealthShareUsageDescription": "Peppe usa los datos de Apple Health que tú autorices para interpretar recuperación, composición corporal y contexto de rendimiento.",
