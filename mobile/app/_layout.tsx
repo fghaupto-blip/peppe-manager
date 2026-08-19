@@ -37,6 +37,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="moment" options={{ title: 'Momento Peppe' }} />
       <Stack.Screen name="routine" options={{ title: 'Rutina' }} />
+      <Stack.Screen name="connections" options={{ title: 'Conexiones' }} />
     </Stack>
   );
 }
