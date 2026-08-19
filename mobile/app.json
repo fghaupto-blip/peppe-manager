@@ -24,7 +24,8 @@
           "NSHealthUpdateUsageDescription": "Peppe sólo escribirá datos en Apple Health si en el futuro tú activas explícitamente esa función.",
           "background": false
         }
-      ]
+      ],
+      "./plugins/withPersonalTeamIos.js"
     ],
     "experiments": {
       "typedRoutes": true
