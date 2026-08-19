@@ -4,7 +4,6 @@ import type { Session } from '@supabase/supabase-js';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../lib/supabase';
-import { registerPeppePushToken } from '../lib/notifications';
 import { colors } from '../lib/theme';
 
 type Scores = { readiness: number | null; fuel: number | null; recovery: number | null; load: number | null };
@@ -22,7 +21,6 @@ export default function HomeScreen() {
   const [scores, setScores] = useState<Scores>(emptyScores);
   const [pendingPromptId, setPendingPromptId] = useState<string | null>(null);
   const [pendingPromptType, setPendingPromptType] = useState<string | null>(null);
-  const [pushStatus, setPushStatus] = useState('Activar notificaciones');
 
   async function loadHome(userId: string) {
     const [{ data: profile }, { data: score }, { data: prompt }] = await Promise.all([
@@ -61,19 +59,6 @@ export default function HomeScreen() {
       else if (!data.session) setMessage('Cuenta creada. Confirma tu correo y luego entra a Peppe.');
     }
     setLoading(false);
-  }
-
-  async function activatePush() {
-    if (!session) return;
-    setPushStatus('Configurando…');
-    try {
-      const result = await registerPeppePushToken(session.user.id);
-      if (result.ok) setPushStatus('Notificaciones activas ✓');
-      else if (result.reason === 'permission_denied') setPushStatus('Permiso de notificaciones rechazado');
-      else setPushStatus('Falta vincular Peppe con EAS');
-    } catch (error) {
-      setPushStatus(error instanceof Error ? error.message : 'No se pudo activar');
-    }
   }
 
   if (loading && !session) {
@@ -145,10 +130,9 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.eyebrow}>NOTIFICACIONES</Text>
-        <Text style={styles.cardTitle}>Haz que Peppe te busque.</Text>
-        <Text style={styles.muted}>Activa push para recibir preguntas antes de comer, al despertar y después de eventos importantes.</Text>
-        <Pressable style={styles.primary} onPress={activatePush}><Text style={styles.primaryText}>{pushStatus}</Text></Pressable>
+        <Text style={styles.eyebrow}>PILOTO IPHONE</Text>
+        <Text style={styles.cardTitle}>Primero validamos Apple Health.</Text>
+        <Text style={styles.muted}>Las notificaciones push quedan temporalmente desactivadas mientras usamos un Apple Personal Team. Se reactivarán al pasar a una membresía Apple Developer con APNs.</Text>
       </View>
 
       <View style={styles.actions}>
