@@ -1,30 +1,6 @@
-import { useEffect } from 'react';
-import { Stack, router } from 'expo-router';
-import * as Notifications from 'expo-notifications';
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
-function openFromNotification(response: Notifications.NotificationResponse | null) {
-  if (!response) return;
-  const data = response.notification.request.content.data as Record<string, unknown>;
-  const path = typeof data.path === 'string' ? data.path : '/moment';
-  router.push(path as never);
-}
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
-  useEffect(() => {
-    Notifications.getLastNotificationResponseAsync().then(openFromNotification);
-    const subscription = Notifications.addNotificationResponseReceivedListener(openFromNotification);
-    return () => subscription.remove();
-  }, []);
-
   return (
     <Stack
       screenOptions={{
