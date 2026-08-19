@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@kingstinct/react-native-healthkit": "14.0.1",
     "@supabase/supabase-js": "^2.57.4",
     "expo": "~57.0.9",
     "expo-constants": "~57.0.8",
@@ -22,6 +23,7 @@
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.2",
+    "react-native-nitro-modules": "0.35.11",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.26.0",
     "react-native-url-polyfill": "^2.0.0"
