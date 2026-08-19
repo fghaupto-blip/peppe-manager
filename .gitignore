@@ -1,0 +1,27 @@
+# Dependencies
+**/node_modules/
+
+# Next.js / Expo generated output
+.next/
+**/.expo/
+**/dist/
+**/build/
+
+# Native generated folders (Expo prebuild)
+mobile/ios/
+mobile/android/
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+mobile/.env
+mobile/.env.local
+
+# macOS
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
