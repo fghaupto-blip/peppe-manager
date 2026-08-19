@@ -22,6 +22,14 @@
         {
           "defaultChannel": "peppe"
         }
+      ],
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Peppe usa los datos de Apple Health que tú autorices para interpretar recuperación, composición corporal y contexto de rendimiento.",
+          "NSHealthUpdateUsageDescription": "Peppe sólo escribirá datos en Apple Health si en el futuro tú activas explícitamente esa función.",
+          "background": false
+        }
       ]
     ],
     "experiments": {
