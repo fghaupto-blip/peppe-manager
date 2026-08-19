@@ -138,6 +138,13 @@ export default function HomeScreen() {
       )}
 
       <View style={styles.card}>
+        <Text style={styles.eyebrow}>DATOS AUTOMÁTICOS</Text>
+        <Text style={styles.cardTitle}>Conecta tus fuentes.</Text>
+        <Text style={styles.muted}>Apple Health es la primera conexión nativa. Garmin Connect y TrainingPeaks se sumarán mediante API directa; Strava quedará separado del motor de IA.</Text>
+        <Pressable style={styles.primary} onPress={() => router.push('/connections')}><Text style={styles.primaryText}>Abrir conexiones</Text></Pressable>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.eyebrow}>NOTIFICACIONES</Text>
         <Text style={styles.cardTitle}>Haz que Peppe te busque.</Text>
         <Text style={styles.muted}>Activa push para recibir preguntas antes de comer, al despertar y después de eventos importantes.</Text>
@@ -152,7 +159,7 @@ export default function HomeScreen() {
       <View style={styles.card}>
         <Text style={styles.eyebrow}>AUTOMATIZACIÓN</Text>
         <Text style={styles.cardTitle}>El objetivo: escribir menos.</Text>
-        <Text style={styles.muted}>Garmin, HealthKit/Health Connect, TrainingPeaks y las fuentes autorizadas alimentarán Peppe. La app sólo preguntará lo que no pueda obtener automáticamente.</Text>
+        <Text style={styles.muted}>Las fuentes autorizadas alimentarán Peppe. La app sólo preguntará lo que no pueda obtener automáticamente.</Text>
       </View>
     </ScrollView>
   );
