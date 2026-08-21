@@ -17,8 +17,7 @@ export default function SummaryScreen() {
     setMessage('');
     try {
       await captureContextIfAuthorized(userId).catch(() => null);
-      const next = await buildPeppeSnapshot(userId, persist);
-      setSnapshot(next);
+      setSnapshot(await buildPeppeSnapshot(userId, persist));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo construir el resumen.');
     } finally {
@@ -56,7 +55,7 @@ export default function SummaryScreen() {
   }
 
   if (!snapshot) {
-    return <View style={styles.center}><Text style={styles.title}>Resumen no disponible</Text><Text style={styles.muted}>{message || 'Inicia sesión para continuar.'}</Text></View>;
+    return <View style={styles.center}><Text style={styles.darkTitle}>Resumen no disponible</Text><Text style={styles.muted}>{message || 'Inicia sesión para continuar.'}</Text></View>;
   }
 
   const stateLabel = snapshot.state === 'favorable' ? 'Favorable' : snapshot.state === 'attention' ? 'Atención' : 'Contexto incompleto';
@@ -66,14 +65,14 @@ export default function SummaryScreen() {
       <View style={styles.hero}>
         <View style={styles.heroTop}>
           <View style={styles.heroTextWrap}>
-            <Text style={styles.eyebrow}>PEPPE · RESUMEN INTELIGENTE</Text>
+            <Text style={styles.eyebrowLight}>PEPPE · RESUMEN INTELIGENTE</Text>
             <Text style={styles.title}>{snapshot.headline}</Text>
           </View>
           <View style={styles.statePill}><Text style={styles.stateText}>{stateLabel}</Text></View>
         </View>
         <Text style={styles.heroBody}>{snapshot.explanation}</Text>
         <View style={styles.confidenceRow}>
-          <View><Text style={styles.metricLabel}>Contexto completo</Text><Text style={styles.metricValue}>{Math.round(snapshot.completeness)}%</Text></View>
+          <View><Text style={styles.metricLabel}>Contexto</Text><Text style={styles.metricValue}>{Math.round(snapshot.completeness)}%</Text></View>
           <View><Text style={styles.metricLabel}>Confianza Peppe</Text><Text style={styles.metricValue}>{Math.round(snapshot.confidence)}%</Text></View>
         </View>
       </View>
@@ -85,27 +84,31 @@ export default function SummaryScreen() {
         <Score label="Load" value={snapshot.scores.load} />
       </View>
 
+      <View style={styles.priorityCard}>
+        <Text style={styles.eyebrowLight}>PRIORIDAD AHORA</Text>
+        <Text style={styles.priorityTitle}>{snapshot.recommendationNow}</Text>
+      </View>
+
+      <RecommendationCard label="NUTRICIÓN" text={snapshot.nutritionRecommendation} />
+      <RecommendationCard label="DESCANSO Y RECUPERACIÓN" text={snapshot.recoveryRecommendation} />
+      <RecommendationCard label="ENTRENAMIENTO" text={snapshot.trainingRecommendation} />
+
       <View style={styles.card}>
-        <Text style={styles.eyebrow}>QUÉ HACER AHORA</Text>
-        <Text style={styles.cardTitle}>{snapshot.recommendationNow}</Text>
+        <Text style={styles.eyebrow}>OBJETIVO Y TRAYECTORIA</Text>
+        <Text style={styles.cardTitle}>{snapshot.objectiveStatus}</Text>
+        {!!snapshot.goal && <Text style={styles.muted}>Objetivo activo: {snapshot.goal}</Text>}
       </View>
 
       <View style={styles.card}>
         <Text style={styles.eyebrow}>COMPARADO CONTIGO</Text>
         <Text style={styles.cardTitle}>{snapshot.comparison}</Text>
-        <Text style={styles.muted}>La referencia principal es tu propia historia. Los ciclos comparables ganarán peso a medida que Peppe acumule más momentos.</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.eyebrow}>OBJETIVO</Text>
-        <Text style={styles.cardTitle}>{snapshot.goal || 'Todavía no hay un objetivo de mediano plazo definido.'}</Text>
-        <Text style={styles.muted}>Este objetivo será el marco para interpretar carga, nutrición, recuperación y tendencia.</Text>
+        <Text style={styles.muted}>La referencia principal es tu propia historia. Las comparaciones entre ciclos ganarán peso a medida que Peppe acumule más momentos.</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.eyebrow}>CONTEXTO</Text>
         <Text style={styles.cardTitle}>{snapshot.locationLabel || 'Ubicación contextual no activa'}</Text>
-        <Text style={styles.muted}>Peppe usa ubicación sólo como contexto: viaje, zona horaria y entorno. No necesita seguimiento continuo.</Text>
+        <Text style={styles.muted}>La ubicación se usa como contexto de viaje, zona horaria y entorno; no como seguimiento continuo.</Text>
         {!snapshot.locationLabel && (
           <Pressable style={styles.primary} onPress={enableLocation} disabled={loading}>
             <Text style={styles.primaryText}>{loading ? 'Activando…' : 'Activar contexto de ubicación'}</Text>
@@ -116,7 +119,7 @@ export default function SummaryScreen() {
       <View style={styles.nextCard}>
         <Text style={styles.eyebrowLight}>PRÓXIMA PREGUNTA DE MAYOR VALOR</Text>
         <Text style={styles.nextTitle}>{snapshot.nextQuestion}</Text>
-        <Text style={styles.nextBody}>Peppe pregunta lo mínimo necesario para aumentar la calidad de la decisión, no para completar un formulario fijo.</Text>
+        <Text style={styles.nextBody}>Peppe vuelve a preguntar sólo cuando una nueva respuesta puede cambiar la recomendación.</Text>
       </View>
 
       {!!message && <View style={styles.notice}><Text style={styles.noticeText}>{message}</Text></View>}
@@ -125,6 +128,15 @@ export default function SummaryScreen() {
         <Text style={styles.refreshText}>{loading ? 'Actualizando…' : 'Actualizar foto del momento'}</Text>
       </Pressable>
     </ScrollView>
+  );
+}
+
+function RecommendationCard({ label, text }: { label: string; text: string }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.eyebrow}>{label}</Text>
+      <Text style={styles.cardTitle}>{text}</Text>
+    </View>
   );
 }
 
@@ -141,6 +153,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: 20, paddingBottom: 60, gap: 14 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 10, backgroundColor: colors.bg },
+  darkTitle: { color: colors.text, fontSize: 28, fontWeight: '900' },
   hero: { backgroundColor: colors.dark, borderRadius: 24, padding: 22, gap: 14 },
   heroTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   heroTextWrap: { flex: 1 },
@@ -157,6 +170,8 @@ const styles = StyleSheet.create({
   scoreCard: { width: '48%', backgroundColor: 'white', borderRadius: 18, padding: 17, borderWidth: 1, borderColor: colors.line },
   scoreLabel: { color: colors.muted, fontWeight: '800' },
   scoreValue: { color: colors.text, fontSize: 36, fontWeight: '900', marginTop: 5 },
+  priorityCard: { backgroundColor: colors.dark, borderRadius: 20, padding: 20, gap: 8 },
+  priorityTitle: { color: 'white', fontSize: 21, lineHeight: 27, fontWeight: '900' },
   card: { backgroundColor: 'white', borderRadius: 20, padding: 19, borderWidth: 1, borderColor: colors.line, gap: 8 },
   cardTitle: { color: colors.text, fontSize: 20, lineHeight: 26, fontWeight: '900' },
   muted: { color: colors.muted, lineHeight: 21 },
