@@ -7,6 +7,10 @@ export type PeppeIntelligenceSnapshot = {
   headline: string;
   explanation: string;
   recommendationNow: string;
+  nutritionRecommendation: string;
+  recoveryRecommendation: string;
+  trainingRecommendation: string;
+  objectiveStatus: string;
   nextQuestion: string;
   goal: string | null;
   comparison: string;
@@ -45,7 +49,7 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
     supabase.from('scores').select('readiness,fuel,recovery,load,score_date').eq('athlete_id', athleteId).order('score_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('daily_metrics').select('sleep_minutes,hrv_ms,resting_hr_bpm,weight_kg,body_fat_pct,bmi,metric_date').eq('athlete_id', athleteId).order('metric_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('subjective_checkins').select('energy,hunger,legs,stress,soreness,pain,checked_at').eq('athlete_id', athleteId).order('checked_at', { ascending: false }).limit(1).maybeSingle(),
-    supabase.from('nutrition_entries').select('id,eaten_at,carbs_g,protein_g').eq('athlete_id', athleteId).gte('eaten_at', since12h).order('eaten_at', { ascending: false }).limit(20),
+    supabase.from('nutrition_entries').select('id,eaten_at,carbs_g,protein_g,description').eq('athlete_id', athleteId).gte('eaten_at', since12h).order('eaten_at', { ascending: false }).limit(20),
     supabase.from('activities').select('sport,started_at,duration_seconds,distance_m,rpe').eq('athlete_id', athleteId).gte('started_at', since24h).order('started_at', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('context_snapshots').select('id,locality,region,country,timezone,captured_at').eq('athlete_id', athleteId).order('captured_at', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('training_cycles').select('name,goal,event_date,status').eq('athlete_id', athleteId).eq('status', 'active').order('start_date', { ascending: false }).limit(1).maybeSingle(),
@@ -100,7 +104,7 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
   const headline = state === 'attention'
     ? 'Hay señales que merecen atención antes de sumar más carga.'
     : state === 'incomplete'
-      ? 'Buen punto de partida, pero todavía falta contexto para cerrar la recomendación.'
+      ? 'Ya tengo parte de tu foto; faltan pocos datos para cerrar la decisión.'
       : 'Estado favorable y contexto suficiente para orientar la próxima decisión.';
 
   const explanationParts: string[] = [];
@@ -111,24 +115,44 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
   if (hunger != null) explanationParts.push(`hambre ${Math.round(hunger)}/10`);
   if (activity?.sport) explanationParts.push(`última sesión: ${activity.sport}`);
   const explanation = explanationParts.length
-    ? `La lectura actual combina ${explanationParts.join(', ')}. Peppe prioriza tu propio baseline y la coherencia entre carga, recuperación, nutrición y sensaciones.`
+    ? `La lectura actual combina ${explanationParts.join(', ')}. Peppe prioriza tu baseline personal y la coherencia entre carga, recuperación, nutrición y sensaciones.`
     : 'Todavía no hay suficientes variables consolidadas. Peppe evita sobreinterpretar hasta completar el contexto necesario.';
 
-  let recommendationNow = 'Mantén el plan previsto y completa los datos que faltan antes de modificar carga, nutrición o recuperación.';
-  if (pain) {
-    recommendationNow = 'No uses Peppe para diagnosticar la molestia. Reduce decisiones adicionales de carga y registra la señal para revisarla con tu entrenador o un profesional si persiste o empeora.';
-  } else if ((hunger != null && hunger >= 8) || nutrition.length === 0) {
-    recommendationNow = 'Prioriza completar el contexto de alimentación e hidratación y alinea la próxima ingesta con la sesión prevista y tu plan nutricional.';
-  } else if (scores.load != null && scores.load >= 75 && scores.recovery != null && scores.recovery < 65) {
-    recommendationNow = 'Mantén el plan del entrenador, evita carga adicional no planificada y prioriza recuperación, sueño e hidratación.';
-  } else if (state === 'favorable') {
-    recommendationNow = 'Mantén el plan previsto. La prioridad es ejecutar con consistencia, combustible e hidratación acordes a la sesión y observar la respuesta posterior.';
+  let nutritionRecommendation = 'Mantén una alimentación coherente con la demanda de tu próxima sesión y registra la ingesta para que Peppe pueda aprender de tu respuesta.';
+  if (nutrition.length === 0) {
+    nutritionRecommendation = 'No tengo una ingesta reciente confirmada. Antes de concluir sobre Fuel, registra o realiza tu próxima comida y prioriza una combinación de carbohidratos, proteína e hidratación acorde a la sesión.';
+  } else if ((hunger != null && hunger >= 8) || (scores.fuel != null && scores.fuel < 60)) {
+    nutritionRecommendation = 'Tu señal de hambre/Fuel sugiere baja disponibilidad. Prioriza combustible e hidratación antes de añadir actividad extra y vuelve a evaluar cómo respondes después de comer.';
+  } else if (activity) {
+    nutritionRecommendation = 'Tienes una sesión reciente registrada. Prioriza recuperación nutricional: carbohidratos para reponer energía, proteína suficiente y líquidos/electrolitos según la carga y el sudor.';
   }
+
+  let recoveryRecommendation = 'Mantén tu rutina habitual de recuperación y protege el sueño de hoy; Peppe observará cómo responde tu baseline en la siguiente lectura.';
+  if (pain) {
+    recoveryRecommendation = 'Registra y observa la molestia. Peppe no la diagnostica: evita carga adicional no planificada y busca revisión de tu entrenador o un profesional si persiste, empeora o limita el movimiento.';
+  } else if ((scores.recovery != null && scores.recovery < 60) || (energy != null && energy <= 4) || (legs != null && legs >= 8)) {
+    recoveryRecommendation = 'La recuperación está comprometida o tus sensaciones muestran fatiga. Prioriza descanso, sueño, hidratación y movilidad suave; evita convertir recuperación en otra sesión exigente.';
+  } else if (scores.load != null && scores.load >= 75) {
+    recoveryRecommendation = 'La carga es alta aunque tu estado sea utilizable. La prioridad es absorber el entrenamiento: sueño consistente, hidratación y no sumar carga fuera del plan.';
+  }
+
+  let trainingRecommendation = 'Mantén el entrenamiento planificado por tu entrenador y evita añadir carga extra. Peppe usará tus respuestas post sesión para evaluar si el costo fue el esperado.';
+  if (pain) {
+    trainingRecommendation = 'No uses Peppe para decidir por sí solo una sesión con dolor. No añadas carga adicional y revisa la sesión planificada con tu entrenador; si la molestia persiste o empeora, corresponde evaluación profesional.';
+  } else if ((scores.readiness != null && scores.readiness < 50) || (scores.recovery != null && scores.recovery < 50) || (energy != null && energy <= 4)) {
+    trainingRecommendation = 'Tu estado actual no respalda sumar intensidad extra. Conserva como referencia el plan del entrenador, usa el calentamiento para reevaluar sensaciones y cualquier modificación del entrenamiento debe revisarse con él.';
+  } else if (scores.load != null && scores.load >= 75 && scores.recovery != null && scores.recovery < 65) {
+    trainingRecommendation = 'La carga reciente es alta respecto de tu recuperación. Cumple sólo la carga planificada y evita sesiones o deporte adicional no previsto.';
+  }
+
+  let recommendationNow = trainingRecommendation;
+  if (nutrition.length === 0 || (hunger != null && hunger >= 8) || (scores.fuel != null && scores.fuel < 60)) recommendationNow = nutritionRecommendation;
+  if (pain || (scores.recovery != null && scores.recovery < 50) || (energy != null && energy <= 4)) recommendationNow = recoveryRecommendation;
 
   let nextQuestion = 'Contexto suficiente. Peppe volverá a preguntar cuando un nuevo evento cambie la decisión.';
   if (!context) nextQuestion = '¿Quieres activar ubicación contextual para detectar viaje, zona horaria y entorno al abrir Peppe?';
   else if (!checkin) nextQuestion = '¿Cómo están ahora tu energía, hambre y piernas?';
-  else if (nutrition.length === 0) nextQuestion = '¿Qué comiste en las últimas horas? Puedes registrarlo con foto o texto.';
+  else if (nutrition.length === 0) nextQuestion = '¿Comiste en las últimas horas?';
   else if (!goal) nextQuestion = '¿Cuál es el objetivo principal que debe guiar tus decisiones de las próximas semanas?';
 
   let comparison = 'Aún necesito más historia para comparar este momento con tu propio patrón.';
@@ -141,6 +165,14 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
     else comparison = `Tu Readiness está ${Math.abs(Math.round(delta))} puntos bajo tu promedio reciente (${Math.round(avg)}).`;
   }
 
+  const objectiveStatus = goal
+    ? state === 'favorable'
+      ? `Trayectoria utilizable para ${goal}. La prioridad es sostener consistencia sin añadir carga fuera del plan.`
+      : state === 'attention'
+        ? `El objetivo sigue siendo ${goal}, pero hoy conviene proteger recuperación y evitar decisiones que aumenten innecesariamente el costo fisiológico.`
+        : `Objetivo: ${goal}. Falta contexto para evaluar con suficiente confianza si el día está completamente alineado.`
+    : 'Define un objetivo de mediano plazo para que Peppe pueda juzgar cada decisión dentro de una trayectoria, no como un día aislado.';
+
   const locationLabel = context
     ? [context.locality, context.region, context.country].filter(Boolean).join(', ') || context.timezone || null
     : null;
@@ -152,6 +184,10 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
     headline,
     explanation,
     recommendationNow,
+    nutritionRecommendation,
+    recoveryRecommendation,
+    trainingRecommendation,
+    objectiveStatus,
     nextQuestion,
     goal,
     comparison,
@@ -171,7 +207,7 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
       recommendation_now: recommendationNow,
       next_question: nextQuestion,
       context_snapshot_id: context?.id ?? null,
-      algorithm_version: 'snapshot-v0.1',
+      algorithm_version: 'snapshot-v0.2',
       input_snapshot: {
         scores,
         metric_date: metric?.metric_date ?? null,
@@ -180,6 +216,12 @@ export async function buildPeppeSnapshot(athleteId: string, persist = true): Pro
         last_activity: activity ?? null,
         goal,
         location: locationLabel,
+        recommendations: {
+          nutrition: nutritionRecommendation,
+          recovery: recoveryRecommendation,
+          training: trainingRecommendation,
+          objective: objectiveStatus,
+        },
       },
     });
   }
