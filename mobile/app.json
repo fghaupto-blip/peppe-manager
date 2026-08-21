@@ -33,6 +33,14 @@
           "isAndroidBackgroundLocationEnabled": false
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Peppe accede a las fotos que elijas para registrar comidas o pantallazos de entrenamiento y salud.",
+          "cameraPermission": "Peppe usa la cámara cuando tú decides fotografiar una comida o evidencia para tu registro.",
+          "microphonePermission": false
+        }
+      ],
       "./plugins/withDisableUserScriptSandboxing.js"
     ],
     "experiments": {
