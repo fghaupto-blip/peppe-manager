@@ -25,6 +25,14 @@
           "background": false
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Peppe usa tu ubicación mientras utilizas la app para entender contexto de entrenamiento, viajes, zona horaria y entorno. Guardamos sólo el contexto necesario para tus recomendaciones.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
       "./plugins/withDisableUserScriptSandboxing.js"
     ],
     "experiments": {
