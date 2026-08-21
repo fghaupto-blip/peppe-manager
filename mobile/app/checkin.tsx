@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router, type Href } from 'expo-router';
+import { pickEvidenceImage, takeEvidencePhoto } from '../lib/evidence';
 import { buildPeppeSnapshot } from '../lib/intelligence';
 import { buildAdaptiveQuestions, saveAdaptiveAnswers, type AdaptiveQuestionContext, type PeppeQuestion } from '../lib/questionEngine';
 import { supabase } from '../lib/supabase';
 import { colors } from '../lib/theme';
 
 const SUMMARY_ROUTE = '/summary' as Href;
+const EVIDENCE_ROUTE = '/evidence' as Href;
 
 type AnswerValue = string | number;
 
@@ -18,6 +20,7 @@ export default function CheckinScreen() {
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [photoSaving, setPhotoSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -53,18 +56,38 @@ export default function CheckinScreen() {
 
   const canContinue = useMemo(() => {
     if (!current) return false;
-    if (current.id === 'meal_description' && answers.meal_recent === 'no') return true;
+    if (current.id === 'meal_description') {
+      if (answers.meal_recent === 'no') return true;
+      const hasText = typeof currentAnswer === 'string' && currentAnswer.trim().length > 0;
+      const hasPhoto = typeof answers.meal_photo_path === 'string' && answers.meal_photo_path.length > 0;
+      return hasText || hasPhoto;
+    }
     if (current.kind === 'text') return typeof currentAnswer === 'string' && currentAnswer.trim().length > 0;
     return currentAnswer !== undefined && currentAnswer !== '';
-  }, [current, currentAnswer, answers.meal_recent]);
+  }, [current, currentAnswer, answers.meal_recent, answers.meal_photo_path]);
+
+  async function attachMealPhoto(mode: 'camera' | 'library') {
+    if (!athleteId) return;
+    setPhotoSaving(true);
+    setMessage('');
+    try {
+      const result = mode === 'camera'
+        ? await takeEvidencePhoto(athleteId, 'food_photo', 'camera')
+        : await pickEvidenceImage(athleteId, 'food_photo', 'other');
+      if (!result) return;
+      setAnswers((prev) => ({ ...prev, meal_photo_path: result.path, meal_photo_evidence_id: result.id }));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No pude guardar la foto.');
+    } finally {
+      setPhotoSaving(false);
+    }
+  }
 
   async function continueFlow() {
     if (!current || !context || !athleteId) return;
 
     let nextStep = step + 1;
-    if (current.id === 'meal_recent' && currentAnswer === 'no' && questions[nextStep]?.id === 'meal_description') {
-      nextStep += 1;
-    }
+    if (current.id === 'meal_recent' && currentAnswer === 'no' && questions[nextStep]?.id === 'meal_description') nextStep += 1;
 
     if (nextStep < questions.length) {
       setStep(nextStep);
@@ -113,6 +136,8 @@ export default function CheckinScreen() {
     );
   }
 
+  const mealPhotoSaved = typeof answers.meal_photo_path === 'string' && answers.meal_photo_path.length > 0;
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.headerRow}>
@@ -126,6 +151,9 @@ export default function CheckinScreen() {
         <Text style={styles.eyebrowLight}>{context.postTraining ? 'POST ENTRENAMIENTO' : 'PEPPE · AHORA'}</Text>
         <Text style={styles.contextTitle}>{context.postTraining ? `Ya detecté tu ${context.activitySport || 'entrenamiento'}.` : 'Ya revisé tus datos automáticos.'}</Text>
         <Text style={styles.contextBody}>No voy a repetirte preguntas que Apple Health, tu historial o las futuras integraciones ya puedan responder.</Text>
+        <Pressable style={styles.evidenceLink} onPress={() => router.push(EVIDENCE_ROUTE)}>
+          <Text style={styles.evidenceLinkText}>＋ Agregar pantallazo de Garmin, TrainingPeaks, Strava o Salud</Text>
+        </Pressable>
       </View>
 
       <View style={styles.questionCard}>
@@ -159,6 +187,20 @@ export default function CheckinScreen() {
           </View>
         )}
 
+        {current.id === 'meal_description' && answers.meal_recent !== 'no' && (
+          <View style={styles.photoBlock}>
+            <View style={styles.photoActions}>
+              <Pressable disabled={photoSaving} style={styles.photoPrimary} onPress={() => attachMealPhoto('camera')}>
+                <Text style={styles.photoPrimaryText}>{photoSaving ? 'Guardando…' : '📷 Sacar foto'}</Text>
+              </Pressable>
+              <Pressable disabled={photoSaving} style={styles.photoSecondary} onPress={() => attachMealPhoto('library')}>
+                <Text style={styles.photoSecondaryText}>Elegir foto</Text>
+              </Pressable>
+            </View>
+            {mealPhotoSaved && <View style={styles.photoSaved}><Text style={styles.photoSavedText}>✓ Foto guardada. Peppe la usará como evidencia nutricional.</Text></View>}
+          </View>
+        )}
+
         {current.kind === 'text' && !(current.id === 'meal_description' && answers.meal_recent === 'no') && (
           <TextInput
             value={typeof currentAnswer === 'string' ? currentAnswer : ''}
@@ -177,11 +219,11 @@ export default function CheckinScreen() {
 
       {!!message && <View style={styles.notice}><Text style={styles.noticeText}>{message}</Text></View>}
 
-      <Pressable disabled={!canContinue || saving} style={[styles.primary, (!canContinue || saving) && styles.primaryDisabled]} onPress={continueFlow}>
+      <Pressable disabled={!canContinue || saving || photoSaving} style={[styles.primary, (!canContinue || saving || photoSaving) && styles.primaryDisabled]} onPress={continueFlow}>
         <Text style={styles.primaryText}>{saving ? 'Construyendo tu recomendación…' : step === questions.length - 1 ? 'Ver mi recomendación' : 'Continuar'}</Text>
       </Pressable>
 
-      <Text style={styles.footer}>Cada respuesta se combina con tus datos automáticos y tu historia. Peppe no diagnostica ni reemplaza a tu entrenador o a profesionales de salud.</Text>
+      <Text style={styles.footer}>Cada respuesta y evidencia se combina con tus datos automáticos y tu historia. Los pantallazos quedan pendientes de análisis/confirmación antes de convertirse en métricas. Peppe no diagnostica ni reemplaza a tu entrenador o a profesionales de salud.</Text>
     </ScrollView>
   );
 }
@@ -209,6 +251,8 @@ const styles = StyleSheet.create({
   contextCard: { backgroundColor: colors.dark, borderRadius: 22, padding: 20, gap: 8 },
   contextTitle: { color: 'white', fontSize: 25, lineHeight: 29, fontWeight: '900' },
   contextBody: { color: '#BBC4D2', lineHeight: 20 },
+  evidenceLink: { marginTop: 7, borderTopWidth: 1, borderTopColor: '#263244', paddingTop: 12 },
+  evidenceLinkText: { color: 'white', fontWeight: '800', lineHeight: 20 },
   questionCard: { backgroundColor: 'white', borderRadius: 22, borderWidth: 1, borderColor: colors.line, padding: 20, gap: 16 },
   category: { color: colors.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 },
   question: { color: colors.text, fontSize: 31, lineHeight: 35, fontWeight: '900', letterSpacing: -0.8 },
@@ -223,7 +267,15 @@ const styles = StyleSheet.create({
   choiceActive: { backgroundColor: colors.text, borderColor: colors.text },
   choiceText: { color: colors.text, fontWeight: '900', fontSize: 17 },
   choiceTextActive: { color: 'white' },
-  textarea: { minHeight: 120, borderWidth: 1, borderColor: colors.line, borderRadius: 14, backgroundColor: '#FAFBFC', padding: 15, fontSize: 16, color: colors.text, textAlignVertical: 'top' },
+  photoBlock: { gap: 10 },
+  photoActions: { flexDirection: 'row', gap: 8 },
+  photoPrimary: { flex: 1, backgroundColor: colors.text, borderRadius: 13, padding: 14, alignItems: 'center' },
+  photoPrimaryText: { color: 'white', fontWeight: '900' },
+  photoSecondary: { flex: 1, borderWidth: 1, borderColor: colors.line, backgroundColor: 'white', borderRadius: 13, padding: 14, alignItems: 'center' },
+  photoSecondaryText: { color: colors.text, fontWeight: '900' },
+  photoSaved: { backgroundColor: colors.success, borderRadius: 12, padding: 12 },
+  photoSavedText: { color: colors.text, fontWeight: '800', lineHeight: 18 },
+  textarea: { minHeight: 105, borderWidth: 1, borderColor: colors.line, borderRadius: 14, backgroundColor: '#FAFBFC', padding: 15, fontSize: 16, color: colors.text, textAlignVertical: 'top' },
   skipNotice: { backgroundColor: colors.soft, borderRadius: 12, padding: 14 },
   skipNoticeText: { color: colors.muted, fontWeight: '700' },
   primary: { backgroundColor: colors.text, borderRadius: 14, padding: 16, alignItems: 'center' },
