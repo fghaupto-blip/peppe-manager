@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { pickEvidenceImage, takeEvidencePhoto, type EvidenceProvider, type EvidenceType } from '../lib/evidence';
 import { supabase } from '../lib/supabase';
 import { colors } from '../lib/theme';
@@ -13,10 +13,21 @@ const providers: Array<{ label: string; value: EvidenceProvider }> = [
   { label: 'Otro', value: 'other' },
 ];
 
+function validProvider(value: string | undefined): EvidenceProvider | null {
+  if (!value) return null;
+  return providers.some((item) => item.value === value) ? value as EvidenceProvider : null;
+}
+
+function validType(value: string | undefined): EvidenceType | null {
+  if (value === 'training_screenshot' || value === 'daily_screenshot' || value === 'food_photo') return value;
+  return null;
+}
+
 export default function EvidenceScreen() {
+  const params = useLocalSearchParams<{ provider?: string; type?: string }>();
   const [athleteId, setAthleteId] = useState<string | null>(null);
-  const [provider, setProvider] = useState<EvidenceProvider>('garmin');
-  const [type, setType] = useState<EvidenceType>('training_screenshot');
+  const [provider, setProvider] = useState<EvidenceProvider>(validProvider(params.provider) ?? 'garmin');
+  const [type, setType] = useState<EvidenceType>(validType(params.type) ?? 'training_screenshot');
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -26,6 +37,13 @@ export default function EvidenceScreen() {
       else setAthleteId(data.user.id);
     });
   }, []);
+
+  useEffect(() => {
+    const nextProvider = validProvider(params.provider);
+    const nextType = validType(params.type);
+    if (nextProvider) setProvider(nextProvider);
+    if (nextType) setType(nextType);
+  }, [params.provider, params.type]);
 
   async function upload(mode: 'library' | 'camera') {
     if (!athleteId) return;
