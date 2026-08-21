@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router, type Href } from 'expo-router';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { connectAppleHealth, syncAppleHealth, type AppleHealthSnapshot } from '../lib/healthkit';
@@ -40,7 +41,7 @@ const PROVIDERS: ProviderCard[] = [
   {
     provider: 'strava',
     title: 'Strava',
-    description: 'Conexión separada para funciones permitidas. No alimentará el motor de IA de Peppe.',
+    description: 'Conexión separada para funciones permitidas. La API no alimentará el motor de IA de Peppe.',
     badge: 'Uso limitado · próxima',
   },
 ];
@@ -48,6 +49,10 @@ const PROVIDERS: ProviderCard[] = [
 function formatSync(value: string | null) {
   if (!value) return 'Todavía sin sincronización';
   return `Última sincronización: ${new Date(value).toLocaleString()}`;
+}
+
+function openEvidence(provider: string, type: 'training_screenshot' | 'daily_screenshot') {
+  router.push(`/evidence?provider=${provider}&type=${type}` as Href);
 }
 
 export default function ConnectionsScreen() {
@@ -112,7 +117,7 @@ export default function ConnectionsScreen() {
         <Text style={styles.eyebrow}>PEPPE · CONEXIONES</Text>
         <Text style={styles.title}>Tus datos, en un solo contexto.</Text>
         <Text style={styles.heroText}>
-          Conecta cada fuente una vez. Peppe normaliza los datos y luego te pregunta sólo lo que los sensores no pueden saber.
+          Conecta cada fuente una vez. Mientras una API aún no esté habilitada, puedes subir un pantallazo para que Peppe conserve esa evidencia y luego la procese con análisis visual.
         </Text>
       </View>
 
@@ -148,10 +153,19 @@ export default function ConnectionsScreen() {
                     <Text style={styles.secondaryText}>Sincronizar ahora</Text>
                   </Pressable>
                 )}
+                <Pressable style={styles.secondary} onPress={() => openEvidence('apple_health', 'daily_screenshot')}>
+                  <Text style={styles.secondaryText}>Subir pantallazo de Salud</Text>
+                </Pressable>
               </View>
             ) : (
-              <View style={styles.pendingBox}>
-                <Text style={styles.pendingText}>La interfaz está preparada. Falta habilitar credenciales/API del proveedor.</Text>
+              <View style={styles.manualBridge}>
+                <Text style={styles.pendingText}>API pendiente. Mientras tanto puedes cargar la información manualmente con un pantallazo.</Text>
+                <Pressable style={styles.primary} onPress={() => openEvidence(provider.provider, 'training_screenshot')}>
+                  <Text style={styles.primaryText}>Subir pantallazo de entrenamiento</Text>
+                </Pressable>
+                <Pressable style={styles.secondary} onPress={() => openEvidence(provider.provider, 'daily_screenshot')}>
+                  <Text style={styles.secondaryText}>Subir pantallazo del día / salud</Text>
+                </Pressable>
               </View>
             )}
           </View>
@@ -177,7 +191,7 @@ export default function ConnectionsScreen() {
       <View style={styles.note}>
         <Text style={styles.noteTitle}>Privacidad por diseño</Text>
         <Text style={styles.body}>
-          Apple controla el permiso por cada categoría. Peppe no necesita escribir en Apple Health para esta primera versión; sólo leeremos lo que tú autorices.
+          Las imágenes y pantallazos se guardan de forma privada por usuario. Sólo los datos confirmados deberían convertirse en métricas del atleta.
         </Text>
       </View>
     </ScrollView>
@@ -210,12 +224,12 @@ const styles = StyleSheet.create({
   body: { color: colors.muted, lineHeight: 21 },
   syncText: { color: colors.text, fontSize: 12, fontWeight: '700' },
   actions: { gap: 9, marginTop: 4 },
+  manualBridge: { backgroundColor: colors.soft, borderRadius: 14, padding: 13, gap: 9, marginTop: 4 },
   primary: { backgroundColor: colors.dark, borderRadius: 12, padding: 14, alignItems: 'center' },
-  primaryText: { color: 'white', fontWeight: '900' },
-  secondary: { borderWidth: 1, borderColor: colors.line, borderRadius: 12, padding: 13, alignItems: 'center' },
-  secondaryText: { color: colors.text, fontWeight: '900' },
+  primaryText: { color: 'white', fontWeight: '900', textAlign: 'center' },
+  secondary: { borderWidth: 1, borderColor: colors.line, backgroundColor: 'white', borderRadius: 12, padding: 13, alignItems: 'center' },
+  secondaryText: { color: colors.text, fontWeight: '900', textAlign: 'center' },
   disabled: { opacity: 0.45 },
-  pendingBox: { backgroundColor: colors.soft, borderRadius: 12, padding: 12 },
   pendingText: { color: colors.muted, fontSize: 12, lineHeight: 18, fontWeight: '700' },
   messageBox: { backgroundColor: colors.warning, borderRadius: 14, padding: 14 },
   message: { color: colors.text, lineHeight: 20, fontWeight: '700' },
