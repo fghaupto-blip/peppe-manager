@@ -98,15 +98,24 @@ export async function syncAppleHealth(athleteId: string): Promise<AppleHealthSna
   ].some((value) => value != null);
 
   if (hasDailyMetrics) {
+    const metricDate = localDateKey();
+    const { data: existing } = await supabase
+      .from('daily_metrics')
+      .select('weight_kg,body_fat_pct,bmi,resting_hr_bpm,hrv_ms')
+      .eq('athlete_id', athleteId)
+      .eq('metric_date', metricDate)
+      .eq('source', APPLE_HEALTH_PROVIDER)
+      .maybeSingle();
+
     const { error } = await supabase.from('daily_metrics').upsert(
       {
         athlete_id: athleteId,
-        metric_date: localDateKey(),
-        weight_kg: snapshot.weightKg,
-        body_fat_pct: snapshot.bodyFatPct,
-        bmi: snapshot.bmi,
-        resting_hr_bpm: snapshot.restingHrBpm,
-        hrv_ms: snapshot.hrvMs,
+        metric_date: metricDate,
+        weight_kg: snapshot.weightKg ?? existing?.weight_kg ?? null,
+        body_fat_pct: snapshot.bodyFatPct ?? existing?.body_fat_pct ?? null,
+        bmi: snapshot.bmi ?? existing?.bmi ?? null,
+        resting_hr_bpm: snapshot.restingHrBpm ?? existing?.resting_hr_bpm ?? null,
+        hrv_ms: snapshot.hrvMs ?? existing?.hrv_ms ?? null,
         source: APPLE_HEALTH_PROVIDER,
         updated_at: new Date().toISOString(),
       },
