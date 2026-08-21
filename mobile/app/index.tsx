@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../lib/supabase';
 import { captureContextIfAuthorized } from '../lib/context';
@@ -10,6 +10,7 @@ import { colors } from '../lib/theme';
 type Scores = { readiness: number | null; fuel: number | null; recovery: number | null; load: number | null };
 
 const emptyScores: Scores = { readiness: null, fuel: null, recovery: null, load: null };
+const SUMMARY_ROUTE = '/summary' as Href;
 
 export default function HomeScreen() {
   const [session, setSession] = useState<Session | null>(null);
@@ -114,7 +115,7 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      <Pressable style={styles.intelligenceCard} onPress={() => router.push('/summary')}>
+      <Pressable style={styles.intelligenceCard} onPress={() => router.push(SUMMARY_ROUTE)}>
         <Text style={styles.eyebrowLight}>PEPPE INTELLIGENCE</Text>
         <Text style={styles.intelligenceTitle}>Ver mi foto del momento.</Text>
         <Text style={styles.intelligenceBody}>Consolida datos, sensaciones, nutrición, contexto e historia para explicar cómo estás, qué hacer ahora y qué información falta.</Text>
