@@ -4,6 +4,7 @@ import type { Session } from '@supabase/supabase-js';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../lib/supabase';
+import { captureContextIfAuthorized } from '../lib/context';
 import { colors } from '../lib/theme';
 
 type Scores = { readiness: number | null; fuel: number | null; recovery: number | null; load: number | null };
@@ -23,6 +24,7 @@ export default function HomeScreen() {
   const [pendingPromptType, setPendingPromptType] = useState<string | null>(null);
 
   async function loadHome(userId: string) {
+    captureContextIfAuthorized(userId).catch(() => null);
     const [{ data: profile }, { data: score }, { data: prompt }] = await Promise.all([
       supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle(),
       supabase.from('scores').select('readiness,fuel,recovery,load').eq('athlete_id', userId).order('score_date', { ascending: false }).limit(1).maybeSingle(),
@@ -112,6 +114,13 @@ export default function HomeScreen() {
         ))}
       </View>
 
+      <Pressable style={styles.intelligenceCard} onPress={() => router.push('/summary')}>
+        <Text style={styles.eyebrowLight}>PEPPE INTELLIGENCE</Text>
+        <Text style={styles.intelligenceTitle}>Ver mi foto del momento.</Text>
+        <Text style={styles.intelligenceBody}>Consolida datos, sensaciones, nutrición, contexto e historia para explicar cómo estás, qué hacer ahora y qué información falta.</Text>
+        <View style={styles.intelligenceAction}><Text style={styles.intelligenceActionText}>Abrir Resumen Inteligente →</Text></View>
+      </Pressable>
+
       {pendingPromptId ? (
         <Pressable style={styles.momentCard} onPress={() => router.push({ pathname: '/moment', params: { promptId: pendingPromptId } })}>
           <Text style={styles.eyebrowLight}>MOMENTO PEPPE</Text>
@@ -131,8 +140,8 @@ export default function HomeScreen() {
 
       <View style={styles.card}>
         <Text style={styles.eyebrow}>PILOTO IPHONE</Text>
-        <Text style={styles.cardTitle}>Primero validamos Apple Health.</Text>
-        <Text style={styles.muted}>Las notificaciones push quedan temporalmente desactivadas mientras usamos un Apple Personal Team. Se reactivarán al pasar a una membresía Apple Developer con APNs.</Text>
+        <Text style={styles.cardTitle}>Primero validamos Apple Health y contexto.</Text>
+        <Text style={styles.muted}>Si autorizas ubicación una vez, Peppe puede actualizar contexto al abrir la app sin pedirte de nuevo. No usamos ubicación en segundo plano en este piloto.</Text>
       </View>
 
       <View style={styles.actions}>
@@ -158,6 +167,7 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: colors.line, borderRadius: 12, padding: 14, fontSize: 16, backgroundColor: 'white' }, primary: { marginTop: 5, backgroundColor: colors.text, borderRadius: 12, padding: 15, alignItems: 'center' }, primaryText: { color: 'white', fontWeight: '900' }, notice: { color: '#415477', lineHeight: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }, eyebrow: { color: colors.muted, fontSize: 11, fontWeight: '900', letterSpacing: 1.4 }, title: { color: colors.text, fontSize: 36, fontWeight: '900', letterSpacing: -1.1, marginTop: 5 }, link: { fontWeight: '800', color: colors.muted, paddingTop: 8 },
   scoreGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, scoreCard: { width: '48%', backgroundColor: 'white', borderRadius: 18, padding: 17, borderWidth: 1, borderColor: colors.line }, scoreLabel: { color: colors.muted, fontWeight: '800' }, scoreValue: { color: colors.text, fontSize: 38, fontWeight: '900', marginTop: 6 },
+  intelligenceCard: { backgroundColor: '#111827', borderRadius: 23, padding: 22, gap: 9 }, intelligenceTitle: { color: 'white', fontSize: 27, lineHeight: 31, fontWeight: '900' }, intelligenceBody: { color: '#BBC4D2', lineHeight: 21 }, intelligenceAction: { marginTop: 5, borderTopWidth: 1, borderTopColor: '#263244', paddingTop: 13 }, intelligenceActionText: { color: 'white', fontWeight: '900' },
   card: { backgroundColor: 'white', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: colors.line, gap: 8 }, cardTitle: { fontSize: 23, fontWeight: '900', color: colors.text, letterSpacing: -0.5 }, muted: { color: colors.muted, lineHeight: 21 },
   momentCard: { backgroundColor: colors.dark, borderRadius: 22, padding: 22, gap: 9 }, eyebrowLight: { color: '#AEB8C9', fontSize: 11, fontWeight: '900', letterSpacing: 1.4 }, momentTitle: { color: 'white', fontSize: 25, fontWeight: '900', lineHeight: 29 }, momentBody: { color: '#BBC4D2', lineHeight: 21 },
   actions: { flexDirection: 'row', gap: 10 }, secondary: { flex: 1, backgroundColor: 'white', borderRadius: 13, borderWidth: 1, borderColor: colors.line, padding: 14, alignItems: 'center' }, secondaryText: { fontWeight: '900', color: colors.text, textAlign: 'center' },
