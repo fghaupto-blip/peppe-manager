@@ -100,7 +100,10 @@ export default function SettingsPage() {
           <h1>¿Cuándo quieres que Peppe te hable?</h1>
           <p className="muted">Cada atleta define sus horarios. Peppe pregunta sólo lo que falte para completar el análisis de ese momento.</p>
         </div>
-        <Link className="ghost link-button" href="/">Inicio</Link>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link className="ghost link-button" href="/integrations">Integraciones</Link>
+          <Link className="ghost link-button" href="/">Inicio</Link>
+        </div>
       </header>
 
       <form className="card form-stack" onSubmit={save}>
