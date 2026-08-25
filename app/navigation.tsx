@@ -19,6 +19,12 @@ export default function Navigation() {
 
   useEffect(() => setOpen(false), [pathname]);
 
+  async function signOut() {
+    await supabase.auth.signOut();
+    setOpen(false);
+    window.location.assign('/');
+  }
+
   if (!user) return null;
 
   const core = [
@@ -57,6 +63,7 @@ export default function Navigation() {
               <Link href="/integrations"><span>Fuentes de datos</span><small>Strava y próximas integraciones</small></Link>
               <Link href="/study"><span>Estudio</span><small>Peso, glucosa y registros manuales</small></Link>
               <Link href="/moment"><span>Momento pendiente</span><small>Preguntas programadas por Peppe</small></Link>
+              <button className="side-menu-signout" type="button" onClick={signOut}>Cerrar sesión</button>
             </nav>
             <div className="side-menu-foot">Peppe pregunta sólo lo que falta.</div>
           </aside>
