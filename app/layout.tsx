@@ -2,7 +2,7 @@ import './globals.css';
 import './moments.css';
 import './question-engine.css';
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Navigation from './navigation';
 
 export const metadata: Metadata = {
   title: 'Peppe Manager',
@@ -14,14 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es">
       <body>
         {children}
-        <nav className="global-nav" aria-label="Navegación principal">
-          <Link href="/">Hoy</Link>
-          <Link href="/peppe">Peppe</Link>
-          <Link href="/study">Estudio</Link>
-          <Link href="/body">Cuerpo</Link>
-          <Link href="/integrations">Integraciones</Link>
-          <Link href="/settings">Rutina</Link>
-        </nav>
+        <Navigation />
       </body>
     </html>
   );
