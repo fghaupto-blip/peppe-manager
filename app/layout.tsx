@@ -1,5 +1,6 @@
 import './globals.css';
 import './moments.css';
+import './question-engine.css';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -14,7 +15,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <nav className="global-nav" aria-label="Navegación principal">
-          <Link href="/">Inicio</Link>
+          <Link href="/">Hoy</Link>
+          <Link href="/peppe">Peppe</Link>
           <Link href="/study">Estudio</Link>
           <Link href="/body">Cuerpo</Link>
           <Link href="/settings">Rutina</Link>
