@@ -1,0 +1,77 @@
+.peppe-home { max-width: 980px; }
+.peppe-topbar { margin-bottom: 18px; }
+.peppe-now { display: grid; grid-template-columns: 1.35fr .85fr; gap: 24px; margin-bottom: 26px; padding: 26px; }
+.peppe-now h2 { font-size: clamp(28px, 4vw, 42px); line-height: 1.05; max-width: 680px; margin-top: 12px; }
+.peppe-now-copy > p { max-width: 720px; }
+.moment-badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; background: #111827; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+.context-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.context-chips span { border-radius: 999px; padding: 8px 11px; background: #f2f4f7; color: #4b5563; font-size: 12px; font-weight: 800; }
+.peppe-now-action { background: #f5f7fa; border-radius: 18px; padding: 20px; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
+.peppe-now-action strong { font-size: 19px; margin-top: 10px; }
+.peppe-now-action p { margin: 8px 0 0; font-size: 14px; }
+.moment-icon-large { font-size: 34px; }
+
+.section-heading { display: flex; justify-content: space-between; gap: 28px; align-items: end; margin: 8px 2px 14px; }
+.section-heading h2 { font-size: clamp(27px, 4vw, 38px); margin: 6px 0 0; letter-spacing: -.04em; }
+.section-heading p { max-width: 430px; color: #6b7280; line-height: 1.5; margin: 0; }
+
+.moments-card { padding: 8px 22px; margin-bottom: 18px; }
+.moments-list { display: grid; }
+.moment-row { display: grid; grid-template-columns: 50px 1fr; min-height: 104px; }
+.moment-rail { position: relative; display: flex; justify-content: center; }
+.moment-dot { width: 34px; height: 34px; margin-top: 20px; border-radius: 50%; display: grid; place-items: center; background: #f0f2f5; border: 1px solid #e0e5eb; color: #687180; font-size: 14px; font-weight: 900; z-index: 2; }
+.moment-line { position: absolute; width: 2px; top: 52px; bottom: -20px; background: #e5e7eb; z-index: 1; }
+.moment-main { border-bottom: 1px solid #eef0f3; padding: 18px 4px 18px 8px; }
+.moment-row:last-child .moment-main { border-bottom: 0; }
+.moment-heading { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+.moment-heading > div { display: grid; gap: 2px; }
+.moment-heading strong { font-size: 18px; }
+.moment-heading > div span { color: #7b8491; font-size: 13px; }
+.moment-main p { margin: 8px 0 0; font-size: 14px; max-width: 670px; }
+.status-pill { padding: 6px 9px; border-radius: 999px; font-size: 11px; font-weight: 900; white-space: nowrap; background: #f2f4f7; color: #6b7280; }
+.status-pill.done { background: #eef8f1; color: #227547; }
+.status-pill.now { background: #111827; color: #fff; }
+.status-pill.optional { background: #faf6ea; color: #836815; }
+.moment-row.done .moment-dot { background: #111827; border-color: #111827; color: #fff; }
+.moment-row.now .moment-dot { background: #111827; border-color: #111827; color: #fff; box-shadow: 0 0 0 6px #edf0f4; }
+.moment-row.now .moment-main { background: linear-gradient(90deg, rgba(17,24,39,.035), rgba(17,24,39,0)); }
+.moment-action { background: transparent; color: #111827; padding: 8px 0 0; font-weight: 900; }
+.moment-action:hover { text-decoration: underline; }
+
+.compact-scores { margin-top: 18px; }
+.compact-scores .card { box-shadow: none; }
+.compact-scores .score strong { font-size: 38px; }
+.moment-composer, .moment-checkin, .day-summary { margin-top: 18px; scroll-margin-top: 18px; }
+.moment-composer h2, .moment-checkin h2, .day-summary h2 { font-size: clamp(25px, 3vw, 34px); }
+.nutrition-history { margin-top: 20px; padding-top: 16px; border-top: 1px solid #edf0f3; }
+.nutrition-history p { margin: 8px 0; font-size: 14px; }
+.moment-checkin .range-row { display: block; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+.summary-grid > div { background: #f5f7fa; padding: 15px; border-radius: 14px; display: grid; gap: 7px; }
+.summary-grid span { color: #7a8390; font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: .06em; }
+.summary-grid strong { font-size: 17px; }
+.sticky-notice { position: sticky; bottom: 92px; z-index: 20; box-shadow: 0 10px 30px rgba(17,24,39,.12); }
+
+@media (max-width: 820px) {
+  .peppe-now { grid-template-columns: 1fr; }
+  .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .peppe-home { padding-top: 18px; }
+  .peppe-topbar h1 { font-size: 34px; }
+  .peppe-now { padding: 18px; border-radius: 20px; }
+  .peppe-now h2 { font-size: 31px; }
+  .moments-card { padding: 4px 12px; }
+  .moment-row { grid-template-columns: 42px 1fr; }
+  .moment-dot { width: 30px; height: 30px; font-size: 12px; }
+  .moment-line { top: 49px; }
+  .moment-main { padding-left: 4px; }
+  .moment-heading { align-items: flex-start; }
+  .moment-heading strong { font-size: 17px; }
+  .status-pill { margin-top: 1px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .compact-scores { grid-template-columns: 1fr 1fr; }
+  .compact-scores .score strong { font-size: 34px; }
+}
