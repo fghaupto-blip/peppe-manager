@@ -47,6 +47,7 @@
 .side-menu nav a:hover { background:white; border-color:#cfd5dd; }
 .side-menu nav span { display:block; font-weight:850; color:#252d3a; }
 .side-menu nav small { display:block; color:#7d8692; margin-top:4px; line-height:1.35; }
+.side-menu-signout { width:100%; text-align:left; background:#fff5f5; border:1px solid #f0dddd; color:#8c4141; padding:13px 15px; }
 .side-menu-foot { margin-top:16px; padding-top:14px; border-top:1px solid #edf0f3; color:#9098a4; font-size:12px; text-align:center; }
 
 .core-nav { gap:4px; padding:5px; }
