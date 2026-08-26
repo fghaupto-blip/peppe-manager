@@ -67,11 +67,7 @@ export default function Home() {
   const [strava, setStrava] = useState<IntegrationAccount | null>(null);
   const [message, setMessage] = useState('');
 
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [authEmail, setAuthEmail] = useState('');
-  const [authPassword, setAuthPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
-  const [signupRole, setSignupRole] = useState<Role>('athlete');
   const [authBusy, setAuthBusy] = useState(false);
 
   const [fullName, setFullName] = useState('');
@@ -141,26 +137,53 @@ export default function Home() {
     };
   }, [loadUserData]);
 
-  async function submitAuth(event: FormEvent) {
+  async function enterPilot(event: FormEvent) {
     event.preventDefault();
+    const email = authEmail.trim().toLowerCase();
+    if (!email) return;
+
     setAuthBusy(true);
     setMessage('');
-    if (authMode === 'signup') {
-      const { data, error } = await supabase.auth.signUp({
-        email: authEmail.trim(),
-        password: authPassword,
-        options: {
-          data: { full_name: signupName.trim(), role: signupRole },
-          emailRedirectTo: 'https://peppe-manager.vercel.app',
-        },
+
+    try {
+      const anonymous = await supabase.auth.signInAnonymously({
+        options: { data: { contact_email: email, role: 'athlete', pilot: true } },
       });
-      if (error) setMessage(error.message);
-      else if (!data.session) setMessage('Cuenta creada. Revisa tu correo para confirmar y vuelve a Peppe.');
-      else setMessage('Cuenta creada. Bienvenido a Peppe.');
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email: authEmail.trim(), password: authPassword });
-      if (error) setMessage(error.message);
+
+      if (anonymous.error || !anonymous.data.user) {
+        const magic = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            shouldCreateUser: true,
+            emailRedirectTo: 'https://peppe-manager.vercel.app',
+            data: { contact_email: email, role: 'athlete', pilot: true },
+          },
+        });
+        if (magic.error) throw magic.error;
+        setMessage('Te envié un acceso a tu correo. Ábrelo y volverás directo a Peppe, sin contraseña.');
+        setAuthBusy(false);
+        return;
+      }
+
+      const currentUser = anonymous.data.user;
+      await Promise.all([
+        supabase.from('profiles').upsert({ id: currentUser.id, full_name: 'Invitado', role: 'athlete', updated_at: new Date().toISOString() }, { onConflict: 'id' }),
+        supabase.from('athlete_profiles').upsert({
+          user_id: currentUser.id,
+          sex: 'prefer_not_to_say',
+          primary_sport: 'running',
+          primary_goal: 'Explorar Peppe y mejorar hábitos',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' }),
+      ]);
+
+      window.localStorage.setItem('peppe_pilot_email', email);
+      setUser(currentUser);
+      await loadUserData(currentUser);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No pude abrir el piloto. Intenta nuevamente.');
     }
+
     setAuthBusy(false);
   }
 
@@ -251,22 +274,21 @@ export default function Home() {
         <span className="eyebrow light">PEPPE MANAGER · PILOTO</span>
         <h1>Un Pepe Grillo para tus hábitos y tus metas.</h1>
         <p>Peppe combina tu plan, tus aplicaciones y lo que tú sientes para ayudarte a decidir qué hacer ahora.</p>
-      </section>
-      <section className="auth-card">
-        <div className="auth-tabs">
-          <button className={authMode === 'login' ? 'active' : ''} onClick={() => setAuthMode('login')}>Entrar</button>
-          <button className={authMode === 'signup' ? 'active' : ''} onClick={() => setAuthMode('signup')}>Crear cuenta</button>
+        <div className="pilot-points">
+          <span>Sin contraseña</span>
+          <span>Acceso de prueba</span>
+          <span>Tu correo sólo identifica el piloto</span>
         </div>
-        <h2>{authMode === 'login' ? 'Bienvenido de vuelta' : 'Únete al piloto'}</h2>
-        <form className="form-stack" onSubmit={submitAuth}>
-          {authMode === 'signup' && <>
-            <label>Nombre completo<input required value={signupName} onChange={(e) => setSignupName(e.target.value)} /></label>
-            <label>Perfil<select value={signupRole} onChange={(e) => setSignupRole(e.target.value as Role)}><option value="athlete">Atleta</option><option value="coach">Coach</option><option value="both">Atleta + Coach</option></select></label>
-          </>}
-          <label>Correo<input required type="email" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} /></label>
-          <label>Contraseña<input required minLength={8} type="password" value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} /></label>
-          <button className="primary wide" disabled={authBusy}>{authBusy ? 'Procesando…' : authMode === 'login' ? 'Entrar a Peppe' : 'Crear mi cuenta'}</button>
+      </section>
+      <section className="auth-card pilot-entry-card">
+        <span className="eyebrow">ACCESO PILOTO</span>
+        <h2>Entra con tu correo.</h2>
+        <p className="muted">Queremos que probar Peppe sea inmediato. Sólo registramos tu correo para identificar a quienes participan en esta etapa.</p>
+        <form className="form-stack" onSubmit={enterPilot}>
+          <label>Correo<input required type="email" autoComplete="email" placeholder="tu@correo.com" value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} /></label>
+          <button className="primary wide" disabled={authBusy}>{authBusy ? 'Abriendo Peppe…' : 'Entrar a Peppe'}</button>
         </form>
+        <small className="pilot-privacy">No pedimos contraseña. Si tu navegador no permite el acceso inmediato, recibirás un enlace seguro por correo.</small>
         {message && <div className="notice">{message}</div>}
       </section>
     </main>
@@ -362,7 +384,7 @@ export default function Home() {
       </section>
 
       {message && <div className="notice">{message}</div>}
-      <footer>V0.6 · Inicio conversacional. Menos pantallas, más contexto automático.</footer>
+      <footer>V0.7 · Acceso piloto sin contraseña. Menos fricción, más contexto automático.</footer>
     </main>
   );
 }
