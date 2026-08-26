@@ -3,6 +3,7 @@ import './moments.css';
 import './question-engine.css';
 import './home.css';
 import './norda-theme.css';
+import './auth-fixes.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 
