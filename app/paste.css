@@ -1,0 +1,136 @@
+.photo-prompt {
+  outline: none;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.photo-prompt:focus-within,
+.photo-prompt:focus {
+  border-color: rgba(105, 116, 72, .42);
+  box-shadow: 0 0 0 4px rgba(105, 116, 72, .08);
+}
+
+.photo-prompt.has-photo {
+  background: rgba(238, 240, 226, .56);
+}
+
+.photo-prompt-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.photo-shortcut {
+  display: block;
+  margin-top: 7px;
+  color: #69705f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.photo-shortcut b {
+  color: #30352a;
+  font-weight: 850;
+}
+
+.photo-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paste-action {
+  border: 1px solid #cfd3c3;
+  background: #eff0e6;
+  color: #30352a;
+  border-radius: 13px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.paste-action:hover {
+  background: #e6e8d8;
+  border-color: #b9bea7;
+}
+
+.photo-ready {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  margin-top: 13px;
+  padding: 9px;
+  border: 1px solid rgba(105, 116, 72, .2);
+  background: rgba(255, 255, 255, .72);
+  border-radius: 14px;
+}
+
+.photo-ready img {
+  width: 66px;
+  height: 54px;
+  display: block;
+  object-fit: cover;
+  border-radius: 9px;
+  border: 1px solid rgba(38, 43, 32, .12);
+  background: #f3f1ea;
+}
+
+.photo-ready > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.photo-ready > div strong {
+  color: #262b20;
+  font-size: 13px;
+}
+
+.photo-ready > div span {
+  color: #747968;
+  font-size: 11px;
+}
+
+.photo-remove {
+  padding: 8px 10px;
+  border: 1px solid rgba(115, 94, 84, .16);
+  background: transparent;
+  color: #76594f;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .photo-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .paste-action,
+  .photo-action {
+    width: 100%;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .photo-ready {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .photo-ready img {
+    width: 58px;
+    height: 50px;
+  }
+
+  .photo-remove {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
