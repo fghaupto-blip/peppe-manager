@@ -1,0 +1,22 @@
+.peppe-weather-card{margin:14px 0;padding:18px;border:1px solid #dde2d7;border-radius:18px;background:rgba(248,247,241,.86);box-shadow:0 14px 32px rgba(31,39,29,.04)}
+.peppe-weather-card.compact{margin:18px 0 4px;background:#f6f5ef}
+.peppe-weather-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.peppe-weather-head strong{display:block;font-size:19px;line-height:1.2;letter-spacing:-.025em;margin-top:6px;color:#182019}
+.peppe-weather-status{flex:none;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;border:1px solid #dfe3da;background:#fff;color:#586255}
+.status-favorable{background:#eef5e8;border-color:#cad9bd;color:#4c6541}
+.status-con-precaución{background:#fbf4df;border-color:#e7d8a4;color:#78672b}
+.status-desfavorable{background:#f8e9e8;border-color:#e2c2be;color:#8a4f49}
+.peppe-weather-permission p,.peppe-weather-summary,.peppe-weather-loading,.peppe-weather-error{margin:14px 0 0;color:#697169;line-height:1.48;font-size:13px}
+.peppe-weather-permission button{margin-top:12px;border:0;border-radius:12px;background:#111827;color:white;padding:11px 14px;font-weight:850;cursor:pointer}
+.peppe-weather-permission button:disabled{opacity:.55;cursor:wait}
+.peppe-weather-permission small{display:block;margin-top:8px;color:#8a9188;line-height:1.4}
+.peppe-weather-main{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.peppe-weather-main>div{border:1px solid #e1e5dc;border-radius:14px;background:#fff;padding:13px}
+.peppe-weather-main span,.peppe-weather-decision>span{display:block;color:#7b8378;font-size:10px;font-weight:900;letter-spacing:.1em}
+.peppe-weather-main strong{display:block;margin:5px 0 4px;font-size:16px;color:#1d241e}
+.peppe-weather-main small{display:block;color:#7f877f;line-height:1.4}
+.peppe-weather-decision{margin-top:12px;border:1px solid #dfe4d9;border-radius:14px;background:#f9faf6;padding:13px}
+.peppe-weather-decision p{margin:6px 0 0;color:#5d665c;line-height:1.48;font-size:13px}
+.peppe-weather-decision b{color:#20271f}
+.peppe-weather-note{display:block;margin-top:10px;color:#8c9389;line-height:1.45}
+@media(max-width:700px){.peppe-weather-main{grid-template-columns:1fr}.peppe-weather-head{align-items:flex-start}.peppe-weather-status{font-size:10px}.peppe-weather-card{padding:15px}.peppe-weather-head strong{font-size:17px}}
