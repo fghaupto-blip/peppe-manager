@@ -8,7 +8,7 @@ import './paste.css';
 import './peppe-enhancer.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
-import PeppeEnhancer from './peppe-enhancer';
+import PeppeEnhancerV2 from './peppe-enhancer-v2';
 
 export const metadata: Metadata = {
   title: 'Peppe Manager',
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es">
       <body>
         {children}
-        <PeppeEnhancer />
+        <PeppeEnhancerV2 />
         <Navigation />
       </body>
     </html>
