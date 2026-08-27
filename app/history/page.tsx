@@ -1,72 +1,32 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 import styles from './history.module.css';
 
-const sections = [
-  {
-    title: 'Composición corporal', cadence: 'Semanal / 8–12 semanas',
-    description: 'Separar tendencia diaria de checkpoints comparables de composición corporal.',
-    items: [['Diario', 'Peso + media móvil 7d'], ['Semanal', 'Cintura + contexto de hidratación'], ['Checkpoint', 'Grasa %, masa grasa, masa magra, agua, dispositivo y condiciones']],
-  },
-  {
-    title: 'Perfil bioquímico', cadence: '3–6 meses',
-    description: 'Resultados de laboratorio como capa longitudinal, nunca como dato aislado.',
-    items: [['Sangre', 'Hemograma + Hb/Hto/VCM'], ['Hierro', 'Ferritina + transferrina/saturación'], ['Metabólico', 'Glucosa ayuno + HbA1c'], ['Contexto', 'Renal, hepático, TSH, B12/folato/Vit D según indicación']],
-  },
-  {
-    title: 'Benchmarks fisiológicos', cadence: 'Mensual / por bloque',
-    description: 'Puntos de referencia que permitan saber si el rendimiento mejora al mismo costo fisiológico.',
-    items: [['Aeróbico', 'VO₂max, FC reposo, HRV'], ['Rendimiento', 'Ritmo/potencia a FC comparable'], ['Economía', 'Cadencia, GCT, zancada, deriva FC/ritmo']],
-  },
-  {
-    title: 'Ambiente + adaptación', cadence: 'Automático por sesión',
-    description: 'Aprender cómo cambia la respuesta del atleta según clima y condiciones externas.',
-    items: [['Clima', 'Temperatura, humedad, punto de rocío, viento, UV, AQI'], ['Respuesta', 'FC, ritmo, potencia, RPE, glucosa'], ['Resultado', 'Perfil térmico + sugerencia de ropa, agua y sodio']],
-  },
-  {
-    title: 'Hidratación + sudor', cadence: '1–2 veces/semana al inicio',
-    description: 'Construir tasa de sudor personal sin hardware adicional.',
-    items: [['Entrada', 'Peso pre/post + líquido + duración'], ['Contexto', 'Temperatura/humedad + intensidad'], ['Aprendizaje', 'L/h esperado por condición']],
-  },
-  {
-    title: 'Fuel + tolerancia GI', cadence: 'Largos / sesiones clave',
-    description: 'Relacionar disponibilidad de carbohidratos con rendimiento y tolerancia digestiva.',
-    items: [['Fuel', 'CHO 24–48 h + CHO/h'], ['GI', 'Náuseas, hinchazón, reflujo, urgencia'], ['Salida', 'Estrategia personal de carrera con nivel de confianza']],
-  },
-];
-
-export default function HistoryPage() {
-  return (
-    <main className={styles.shell}>
-      <header className="topbar">
-        <div>
-          <span className="eyebrow">PEPPE · HISTORIAL LONGITUDINAL</span>
-          <h1>Lo que cambia lento vive aquí.</h1>
-          <p className="muted">Separado del minuto a minuto: checkpoints clínicos, fisiológicos y de composición para comparar meses, bloques y temporadas.</p>
-        </div>
-        <Link className="ghost link-button" href="/intelligence">Intelligence</Link>
-      </header>
-
-      <section className={styles.intro}>
-        <article className={`card ${styles.principle}`}><span className="eyebrow light">REGLA DE PRODUCTO</span><h2>No pedir todos los días lo que cambia cada 3 meses.</h2><p>Peppe captura automáticamente lo frecuente y reserva este historial para mediciones de baja frecuencia. Cada registro conserva fecha, fuente/dispositivo, condiciones y comparables previos.</p></article>
-        <article className="card"><span className="eyebrow">LECTURA LONGITUDINAL</span><h2>Baseline → tendencia → intervención → resultado</h2><p>El Decision Engine usa estos datos como contexto; no genera decisiones clínicas autónomas.</p><div className={styles.actions}><Link className={styles.link} href="/study">Abrir peso + glucosa</Link><Link className={styles.link} href="/body">Abrir cuerpo</Link></div></article>
-      </section>
-
-      <section className={styles.grid}>
-        {sections.map((section) => <article className={`card ${styles.card}`} key={section.title}>
-          <div className={styles.head}><span className="eyebrow">HISTORIAL</span><span className={styles.cadence}>{section.cadence}</span></div>
-          <h2>{section.title}</h2><p>{section.description}</p>
-          <div className={styles.items}>{section.items.map(([label,value]) => <div className={styles.item} key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
-        </article>)}
-      </section>
-
-      <section className={`card ${styles.timeline}`}>
-        <span className="eyebrow">TIMELINE DE CHECKPOINTS</span><h2>Una vista para comparar ciclos completos.</h2>
-        <div className={styles.timelineRow}><span>BASELINE</span><div className={styles.timelineLine}/><strong>Inicio de bloque</strong></div>
-        <div className={styles.timelineRow}><span>CHECKPOINT</span><div className={styles.timelineLine}/><strong>8–12 semanas</strong></div>
-        <div className={styles.timelineRow}><span>RACE / TEST</span><div className={styles.timelineLine}/><strong>Resultado objetivo</strong></div>
-      </section>
-
-      <section className={`card ${styles.note}`}><span className="eyebrow">PRÓXIMA CAPA DE DATOS</span><h2>Persistencia estructurada en Supabase.</h2><p>La siguiente implementación debe crear tablas para body composition checkpoints, lab panels/results, sweat tests, environment responses y interventions/outcomes, con historial inmutable y comparación automática.</p></section>
-    </main>
-  );
+export default function HistoryPage(){
+  const [user,setUser]=useState<any>(null); const [body,setBody]=useState<any[]>([]); const [labs,setLabs]=useState<any[]>([]); const [sweat,setSweat]=useState<any[]>([]); const [decisions,setDecisions]=useState<any[]>([]); const [responses,setResponses]=useState<any[]>([]);
+  const [weight,setWeight]=useState(''); const [fat,setFat]=useState(''); const [lean,setLean]=useState(''); const [water,setWater]=useState(''); const [device,setDevice]=useState('Tanita');
+  const [hb,setHb]=useState(''); const [ferritin,setFerritin]=useState(''); const [glucose,setGlucose]=useState(''); const [message,setMessage]=useState('');
+  async function load(uid:string){const [b,l,s,d,r]=await Promise.all([
+    supabase.from('body_composition_checkpoints').select('*').eq('athlete_id',uid).order('measured_at',{ascending:false}).limit(8),
+    supabase.from('lab_panels').select('*,lab_results(*)').eq('athlete_id',uid).order('collected_at',{ascending:false}).limit(6),
+    supabase.from('sweat_tests').select('*').eq('athlete_id',uid).order('measured_at',{ascending:false}).limit(6),
+    supabase.from('decision_snapshots').select('*').eq('athlete_id',uid).order('decided_at',{ascending:false}).limit(6),
+    supabase.from('session_responses').select('*').eq('athlete_id',uid).order('responded_at',{ascending:false}).limit(6),
+  ]);setBody(b.data||[]);setLabs(l.data||[]);setSweat(s.data||[]);setDecisions(d.data||[]);setResponses(r.data||[]);}
+  useEffect(()=>{(async()=>{const {data:{user}}=await supabase.auth.getUser();setUser(user);if(user)await load(user.id);})();},[]);
+  async function saveBody(){if(!user)return;await supabase.from('body_composition_checkpoints').insert({athlete_id:user.id,measured_at:new Date().toISOString(),weight_kg:weight?Number(weight):null,body_fat_pct:fat?Number(fat):null,lean_mass_kg:lean?Number(lean):null,body_water_pct:water?Number(water):null,device,source:'manual',conditions:{time_of_day:'manual'}});setMessage('Checkpoint corporal guardado');await load(user.id);}
+  async function saveLab(){if(!user)return;const {data:panel,error}=await supabase.from('lab_panels').insert({athlete_id:user.id,collected_at:new Date().toISOString(),panel_name:'Perfil rendimiento',source:'manual'}).select().single();if(error||!panel)return;const rows=[hb&&{panel_id:panel.id,athlete_id:user.id,analyte:'Hemoglobina',value_numeric:Number(hb),unit:'g/dL',clinical_category:'hematology'},ferritin&&{panel_id:panel.id,athlete_id:user.id,analyte:'Ferritina',value_numeric:Number(ferritin),unit:'ng/mL',clinical_category:'iron'},glucose&&{panel_id:panel.id,athlete_id:user.id,analyte:'Glucosa ayuno',value_numeric:Number(glucose),unit:'mg/dL',clinical_category:'metabolic'}].filter(Boolean);if(rows.length)await supabase.from('lab_results').insert(rows as any[]);setMessage('Panel bioquímico guardado');await load(user.id);}
+  const latest=body[0];
+  return <main className={styles.shell}><header className="topbar"><div><span className="eyebrow">PEPPE · HISTORIAL FUNCIONAL</span><h1>Baseline → tendencia → resultado.</h1><p className="muted">Datos de baja frecuencia que alimentan decisiones futuras sin pedirlos todos los días.</p></div><Link className="ghost link-button" href="/decision">Decision Engine</Link></header>
+    <section className={styles.intro}><article className={`card ${styles.principle}`}><span className="eyebrow light">ÚLTIMO CHECKPOINT</span><h2>{latest?`${latest.weight_kg??'—'} kg · ${latest.body_fat_pct??'—'}% grasa`:'Aún sin checkpoint'}</h2><p>{latest?`${latest.device||'Dispositivo'} · ${new Date(latest.measured_at).toLocaleDateString('es-CL')}`:'Agrega tu primera medición comparable.'}</p></article><article className="card"><span className="eyebrow">APRENDIZAJE</span><h2>{decisions.length} decisiones · {responses.length} respuestas</h2><p>El historial ya conecta decisiones previas con la respuesta real al entrenamiento.</p></article></section>
+    <section className={styles.grid}><article className="card"><span className="eyebrow">+ CHECKPOINT CORPORAL</span><h2>Composición corporal</h2><div className="form-grid"><label>Peso kg<input value={weight} onChange={e=>setWeight(e.target.value)}/></label><label>Grasa %<input value={fat} onChange={e=>setFat(e.target.value)}/></label><label>Masa magra kg<input value={lean} onChange={e=>setLean(e.target.value)}/></label><label>Agua %<input value={water} onChange={e=>setWater(e.target.value)}/></label><label className="full">Dispositivo<input value={device} onChange={e=>setDevice(e.target.value)}/></label></div><button className="primary wide" onClick={saveBody}>Guardar checkpoint</button></article>
+    <article className="card"><span className="eyebrow">+ PANEL BIOQUÍMICO</span><h2>Marcadores prioritarios</h2><div className="form-grid"><label>Hemoglobina g/dL<input value={hb} onChange={e=>setHb(e.target.value)}/></label><label>Ferritina ng/mL<input value={ferritin} onChange={e=>setFerritin(e.target.value)}/></label><label className="full">Glucosa ayuno mg/dL<input value={glucose} onChange={e=>setGlucose(e.target.value)}/></label></div><button className="primary wide" onClick={saveLab}>Guardar panel</button></article></section>
+    {message&&<div className="notice">{message}</div>}
+    <section className={styles.grid} style={{marginTop:16}}><article className="card"><span className="eyebrow">HISTORIAL CORPORAL</span><h2>{body.length} checkpoints</h2>{body.map(x=><p key={x.id}><strong>{new Date(x.measured_at).toLocaleDateString('es-CL')}</strong> · {x.weight_kg??'—'} kg · {x.body_fat_pct??'—'}% grasa · {x.lean_mass_kg??'—'} kg magra</p>)}</article><article className="card"><span className="eyebrow">LABS</span><h2>{labs.length} paneles</h2>{labs.map(x=><p key={x.id}><strong>{new Date(x.collected_at).toLocaleDateString('es-CL')}</strong> · {(x.lab_results||[]).map((r:any)=>`${r.analyte} ${r.value_numeric??r.value_text} ${r.unit||''}`).join(' · ')||'Sin resultados'}</p>)}</article></section>
+    <section className={styles.grid} style={{marginTop:16}}><article className="card"><span className="eyebrow">DECISIONES</span><h2>Decision Engine</h2>{decisions.map(x=><p key={x.id}><strong>{x.decision_label}</strong> · confianza {x.confidence_pct??'—'}% · {new Date(x.decided_at).toLocaleDateString('es-CL')}</p>)}<Link className={styles.link} href="/decision">Nueva decisión</Link></article><article className="card"><span className="eyebrow">SESSION RESPONSE</span><h2>Respuesta al entrenamiento</h2>{responses.map(x=><p key={x.id}><strong>{x.response_label}</strong> · RPE {x.rpe??'—'} · dolor {x.pain_score??'—'} · {new Date(x.responded_at).toLocaleDateString('es-CL')}</p>)}<Link className={styles.link} href="/session-response">Registrar respuesta</Link></article></section>
+    <section className={`card ${styles.note}`}><span className="eyebrow">SUDOR + AMBIENTE</span><h2>{sweat.length} tests guardados</h2><p>Esta capa se usará para aprender L/h y ajustar agua, sodio y vestimenta por condición.</p></section>
+  </main>;
 }
