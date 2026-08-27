@@ -6,9 +6,11 @@ import './norda-theme.css';
 import './auth-fixes.css';
 import './paste.css';
 import './peppe-enhancer.css';
+import './peppe-weather.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 import PeppeEnhancerV2 from './peppe-enhancer-v2';
+import PeppeWeather from './peppe-weather';
 
 export const metadata: Metadata = {
   title: 'Peppe Manager',
@@ -21,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <PeppeEnhancerV2 />
+        <PeppeWeather />
         <Navigation />
       </body>
     </html>
