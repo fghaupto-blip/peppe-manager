@@ -4,6 +4,7 @@ import './question-engine.css';
 import './home.css';
 import './norda-theme.css';
 import './auth-fixes.css';
+import './paste.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 
