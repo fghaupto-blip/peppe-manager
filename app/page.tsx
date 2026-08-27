@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import type { ClipboardEvent, DragEvent, User } from 'react';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import type { ClipboardEvent, DragEvent } from 'react';
+import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 type Role = 'athlete' | 'coach' | 'both';
@@ -68,7 +68,7 @@ function imageExtension(type: string) {
 
 export default function Home() {
   const [booting, setBooting] = useState(true);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [athleteProfile, setAthleteProfile] = useState<AthleteProfile | null>(null);
   const [latestCheckin, setLatestCheckin] = useState<Checkin | null>(null);
@@ -95,7 +95,7 @@ export default function Home() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [contextBusy, setContextBusy] = useState(false);
 
-  const loadUserData = useCallback(async (currentUser: SupabaseUser) => {
+  const loadUserData = useCallback(async (currentUser: User) => {
     setBooting(true);
     const [profileResult, athleteResult, checkinResult, sessionResult, integrationResult] = await Promise.all([
       supabase.from('profiles').select('id,full_name,role').eq('id', currentUser.id).maybeSingle(),
