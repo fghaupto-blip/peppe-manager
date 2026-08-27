@@ -41,8 +41,9 @@ export default function Navigation() {
         <nav>
           <Link href="/settings"><span>Plan y rutina</span><small>Objetivo, horarios y configuración del día</small></Link>
           <Link href="/integrations"><span>Fuentes de datos</span><small>Strava y próximas integraciones</small></Link>
-          <Link href="/study"><span>Estudio</span><small>Peso, glucosa y registros manuales</small></Link>
-          <Link href="/intelligence"><span>Performance Intelligence</span><small>Readiness, fuel, hidratación, clima, labs e historial</small></Link>
+          <Link href="/study"><span>Estudio diario</span><small>Peso, glucosa y registros de alta frecuencia</small></Link>
+          <Link href="/intelligence"><span>Performance Intelligence</span><small>Readiness, fuel, hidratación, clima y decisión</small></Link>
+          <Link href="/history"><span>Historial longitudinal</span><small>Labs, composición corporal y checkpoints de baja frecuencia</small></Link>
           <Link href="/moment"><span>Momento pendiente</span><small>Preguntas programadas por Peppe</small></Link>
           <button className="side-menu-signout" type="button" onClick={signOut}>Cerrar sesión</button>
         </nav>
