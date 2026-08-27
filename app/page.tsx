@@ -1,7 +1,8 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import type { User } from '@supabase/supabase-js';
+import type { ClipboardEvent, DragEvent, User } from 'react';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 type Role = 'athlete' | 'coach' | 'both';
@@ -33,6 +34,7 @@ type TrainingSession = {
   avg_power: number | null;
 };
 type IntegrationAccount = { status: string; last_synced_at: string | null };
+type PhotoSource = 'file' | 'paste' | 'drop' | null;
 
 const feelings = [
   { value: 3, label: 'Muy cansado', icon: '○' },
@@ -57,9 +59,16 @@ function formatDuration(seconds: number | null) {
   return hours ? `${hours}h ${String(minutes).padStart(2, '0')}m` : `${minutes} min`;
 }
 
+function imageExtension(type: string) {
+  if (type.includes('png')) return 'png';
+  if (type.includes('webp')) return 'webp';
+  if (type.includes('gif')) return 'gif';
+  return 'jpg';
+}
+
 export default function Home() {
   const [booting, setBooting] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [athleteProfile, setAthleteProfile] = useState<AthleteProfile | null>(null);
   const [latestCheckin, setLatestCheckin] = useState<Checkin | null>(null);
@@ -82,9 +91,11 @@ export default function Home() {
   const [feeling, setFeeling] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
+  const [photoSource, setPhotoSource] = useState<PhotoSource>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [contextBusy, setContextBusy] = useState(false);
 
-  const loadUserData = useCallback(async (currentUser: User) => {
+  const loadUserData = useCallback(async (currentUser: SupabaseUser) => {
     setBooting(true);
     const [profileResult, athleteResult, checkinResult, sessionResult, integrationResult] = await Promise.all([
       supabase.from('profiles').select('id,full_name,role').eq('id', currentUser.id).maybeSingle(),
@@ -136,6 +147,68 @@ export default function Home() {
       listener.subscription.unsubscribe();
     };
   }, [loadUserData]);
+
+  useEffect(() => {
+    if (!photo) {
+      setPhotoPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photo);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
+  function attachPhoto(file: File | null, source: PhotoSource = 'file') {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setMessage('Peppe necesita una imagen. Pega o selecciona un pantallazo, foto o captura.');
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setMessage('La imagen supera 8 MB. Elige un pantallazo o foto más liviana.');
+      return;
+    }
+    setPhoto(file);
+    setPhotoSource(source);
+    setMessage('');
+  }
+
+  function handlePaste(event: ClipboardEvent<HTMLElement>) {
+    const imageItem = Array.from(event.clipboardData.items).find((item) => item.type.startsWith('image/'));
+    const pasted = imageItem?.getAsFile() ?? null;
+    if (!pasted) return;
+    event.preventDefault();
+    const extension = imageExtension(pasted.type);
+    attachPhoto(new File([pasted], `pantallazo-${Date.now()}.${extension}`, { type: pasted.type }), 'paste');
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    const dropped = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith('image/')) ?? null;
+    attachPhoto(dropped, 'drop');
+  }
+
+  async function pasteFromClipboard() {
+    setMessage('');
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.read !== 'function') {
+        setMessage('Copia el pantallazo y pégalo en este recuadro con ⌘V o Ctrl+V. En iPhone también puedes usar + Foto para elegir una captura.');
+        return;
+      }
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const type = item.types.find((candidate) => candidate.startsWith('image/'));
+        if (!type) continue;
+        const blob = await item.getType(type);
+        const extension = imageExtension(type);
+        attachPhoto(new File([blob], `pantallazo-${Date.now()}.${extension}`, { type }), 'paste');
+        return;
+      }
+      setMessage('No encontré una imagen en el portapapeles. Copia un pantallazo y vuelve a tocar “Pegar pantallazo”.');
+    } catch {
+      setMessage('El navegador no permitió leer el portapapeles. Haz clic en el recuadro y usa ⌘V / Ctrl+V, o selecciona la captura con + Foto.');
+    }
+  }
 
   async function enterPilot(event: FormEvent) {
     event.preventDefault();
@@ -252,9 +325,9 @@ export default function Home() {
         const { error: evidenceError } = await supabase.from('context_evidence').insert({
           athlete_id: user.id,
           kind: 'photo',
-          note: note.trim() || 'Foto aportada desde inicio',
+          note: note.trim() || (photoSource === 'paste' ? 'Pantallazo pegado desde inicio' : 'Foto aportada desde inicio'),
           storage_path: path,
-          source: 'home',
+          source: photoSource === 'paste' ? 'home_clipboard' : 'home',
         });
         if (evidenceError) throw evidenceError;
       }
@@ -341,7 +414,7 @@ export default function Home() {
           <p>No necesito que completes un formulario. Dime sólo lo que tú sabes; Peppe buscará el resto en tus fuentes conectadas.</p>
         </div>
 
-        <form onSubmit={continueWithPeppe}>
+        <form onSubmit={continueWithPeppe} onPaste={handlePaste}>
           <div className="feeling-grid" aria-label="Cómo te sientes">
             {feelings.map((item) => <button
               className={feeling === item.value ? 'feeling-option selected' : 'feeling-option'}
@@ -356,12 +429,39 @@ export default function Home() {
             <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Opcional · Ej: piernas cargadas, dormí poco, tengo hambre…" rows={3} />
           </label>
 
-          <div className="photo-prompt">
-            <div><strong>¿Quieres aportar una foto?</strong><span>Comida, captura de entrenamiento, glucosa, cuerpo o cualquier contexto que ayude.</span></div>
-            <label className={photo ? 'photo-action selected' : 'photo-action'}>
-              {photo ? 'Foto lista ✓' : '+ Foto'}
-              <input type="file" accept="image/*" capture="environment" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
-            </label>
+          <div
+            className={photo ? 'photo-prompt has-photo' : 'photo-prompt'}
+            tabIndex={0}
+            role="group"
+            aria-label="Adjuntar o pegar una captura"
+            onPaste={handlePaste}
+            onDrop={handleDrop}
+            onDragOver={(event) => event.preventDefault()}
+          >
+            <div className="photo-prompt-copy">
+              <strong>¿Quieres aportar una foto o pantallazo?</strong>
+              <span>Comida, entrenamiento, glucosa, sueño, cuerpo o cualquier contexto que ayude.</span>
+              <small className="photo-shortcut">Puedes copiar un pantallazo y pegarlo aquí con <b>⌘V</b> / <b>Ctrl+V</b>, o arrastrarlo desde tu computador.</small>
+
+              {photo && (
+                <div className="photo-ready">
+                  {photoPreview && <img src={photoPreview} alt="Vista previa del contexto" />}
+                  <div>
+                    <strong>Pantallazo listo ✓</strong>
+                    <span>{photoSource === 'paste' ? 'Pegado desde el portapapeles' : photoSource === 'drop' ? 'Arrastrado a Peppe' : 'Seleccionado desde tu dispositivo'}</span>
+                  </div>
+                  <button type="button" className="photo-remove" onClick={() => { setPhoto(null); setPhotoSource(null); }}>Quitar</button>
+                </div>
+              )}
+            </div>
+
+            <div className="photo-actions">
+              <button type="button" className="paste-action" onClick={pasteFromClipboard}>⌘V Pegar pantallazo</button>
+              <label className={photo ? 'photo-action selected' : 'photo-action'}>
+                {photo ? 'Cambiar foto' : '+ Foto'}
+                <input type="file" accept="image/*" onChange={(e) => attachPhoto(e.target.files?.[0] ?? null, 'file')} />
+              </label>
+            </div>
           </div>
 
           <button className="primary wide home-continue" disabled={contextBusy}>{contextBusy ? 'Ordenando tu contexto…' : (feeling !== null || note.trim() || photo) ? 'Guardar y seguir con Peppe' : 'Seguir con lo que Peppe ya sabe'}</button>
@@ -384,7 +484,7 @@ export default function Home() {
       </section>
 
       {message && <div className="notice">{message}</div>}
-      <footer>V0.7 · Acceso piloto sin contraseña. Menos fricción, más contexto automático.</footer>
+      <footer>V0.8 · Acceso piloto sin contraseña. Menos fricción, más contexto automático.</footer>
     </main>
   );
 }
