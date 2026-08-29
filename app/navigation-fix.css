@@ -1,0 +1,117 @@
+/* Navigation polish — desktop + mobile drawer */
+.menu-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 190 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  background: rgba(18,24,33,.28) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.side-menu {
+  position: fixed !important;
+  z-index: 200 !important;
+  top: 16px !important;
+  right: 16px !important;
+  left: auto !important;
+  width: min(440px, calc(100vw - 32px)) !important;
+  max-height: calc(100vh - 32px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding: 22px !important;
+  border-radius: 24px !important;
+  background: #f7f3eb !important;
+  border: 1px solid rgba(64,69,61,.16) !important;
+  box-shadow: 0 28px 80px rgba(18,24,33,.26) !important;
+}
+
+.side-menu-head {
+  position: sticky;
+  top: -22px;
+  z-index: 3;
+  margin: -22px -22px 18px !important;
+  padding: 22px 22px 16px !important;
+  background: rgba(247,243,235,.97);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(64,69,61,.10);
+}
+
+.side-menu-head strong {
+  font-size: 34px !important;
+  line-height: 1 !important;
+}
+
+.side-menu nav {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+.side-menu nav a,
+.side-menu-signout {
+  width: 100% !important;
+  min-height: 70px;
+  padding: 15px 16px !important;
+  border-radius: 16px !important;
+}
+
+.side-menu nav a {
+  display: block;
+  background: rgba(255,255,255,.62) !important;
+  border: 1px solid rgba(64,69,61,.13) !important;
+}
+
+.side-menu nav a:hover {
+  background: #fff !important;
+  border-color: rgba(64,69,61,.28) !important;
+  transform: translateY(-1px);
+}
+
+.side-menu nav span {
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  color: #121821 !important;
+}
+
+.side-menu nav small {
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  color: #6d746d !important;
+  max-width: 350px;
+}
+
+.side-menu-foot {
+  margin-top: 18px !important;
+  padding: 16px 2px 2px !important;
+}
+
+.menu-close {
+  flex: 0 0 auto;
+  background: rgba(255,255,255,.72) !important;
+  border: 1px solid rgba(64,69,61,.12) !important;
+}
+
+@media (max-width: 700px) {
+  .menu-backdrop { background: rgba(18,24,33,.34) !important; }
+  .side-menu {
+    top: 8px !important;
+    right: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px) !important;
+    padding: 18px !important;
+    border-radius: 20px !important;
+  }
+  .side-menu-head {
+    top: -18px;
+    margin: -18px -18px 14px !important;
+    padding: 18px 18px 14px !important;
+  }
+  .side-menu-head strong { font-size: 30px !important; }
+  .side-menu nav { gap: 8px !important; }
+  .side-menu nav a,
+  .side-menu-signout { min-height: 64px; padding: 13px 14px !important; }
+  .side-menu nav span { font-size: 14px !important; }
+  .side-menu nav small { font-size: 12px !important; }
+}
