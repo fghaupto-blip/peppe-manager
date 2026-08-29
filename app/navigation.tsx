@@ -11,7 +11,17 @@ export default function Navigation() {
   const [user, setUser] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
   const [backoffice,setBackoffice]=useState(false);
-  useEffect(() => { supabase.auth.getUser().then(async({ data }) => { setUser(data.user ?? null); if(data.user){const {data:access}=await supabase.from('backoffice_members').select('active').eq('user_id',data.user.id).maybeSingle();setBackoffice(Boolean(access?.active));} }); const { data } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null)); return () => data.subscription.unsubscribe(); }, []);
+  useEffect(() => {
+    supabase.auth.getUser().then(async({ data }) => {
+      setUser(data.user ?? null);
+      if(data.user){
+        const {data:access}=await supabase.from('backoffice_members').select('active').eq('user_id',data.user.id).maybeSingle();
+        setBackoffice(Boolean(access?.active));
+      }
+    });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null));
+    return () => data.subscription.unsubscribe();
+  }, []);
   useEffect(() => setOpen(false), [pathname]);
   async function signOut() { await supabase.auth.signOut(); setOpen(false); window.location.assign('/'); }
   if (!user) return null;
@@ -19,7 +29,7 @@ export default function Navigation() {
   return <>
     <button className="menu-trigger" type="button" aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen((value) => !value)}><span /><span /><span /></button>
     {open && <><button className="menu-backdrop" aria-label="Cerrar menú" onClick={() => setOpen(false)} /><aside className="side-menu" aria-label="Menú secundario"><div className="side-menu-head"><div><span className="eyebrow">PEPPE</span><strong>Más</strong></div><button className="menu-close" onClick={() => setOpen(false)} aria-label="Cerrar">×</button></div><nav>
-      {backoffice&&<Link href="/backoffice"><span>Intelligence Console</span><small>Backoffice privado · Command Center, Athlete 360 y auditoría</small></Link>}
+      <Link href="/backoffice"><span>{backoffice?'Intelligence Console':'🔒 Intelligence Console'}</span><small>{backoffice?'Backoffice privado · Command Center, Athlete 360 y auditoría':'Backoffice privado · acceso sólo para usuarios autorizados'}</small></Link>
       <Link href="/decision"><span>Decision Engine</span><small>GO, CAUTION, MODIFY o RECOVER con confianza y por qué</small></Link>
       <Link href="/session-response"><span>Session Response</span><small>Respuesta real del cuerpo después del entrenamiento</small></Link>
       <Link href="/history"><span>Historial funcional</span><small>Decisiones, respuestas, labs y composición corporal</small></Link>
