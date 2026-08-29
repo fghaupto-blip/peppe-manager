@@ -7,6 +7,7 @@ import './auth-fixes.css';
 import './paste.css';
 import './peppe-enhancer.css';
 import './peppe-weather.css';
+import './navigation-fix.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 import PeppeEnhancerV2 from './peppe-enhancer-v2';
