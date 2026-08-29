@@ -1,0 +1,10 @@
+/* Responsive navigation hardening */
+.menu-backdrop{position:fixed!important;inset:0!important;z-index:9998!important;border-radius:0!important;background:rgba(10,12,10,.26)!important;backdrop-filter:none!important;padding:0!important}
+.side-menu{position:fixed!important;z-index:9999!important;top:0!important;right:0!important;height:100dvh!important;max-height:100dvh!important;width:min(520px,100vw)!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important}
+.side-menu-head{position:sticky!important;top:0!important;z-index:2!important}
+.menu-trigger{position:fixed!important;z-index:10000!important}
+.side-menu nav{display:block!important}
+.side-menu nav a,.side-menu-signout{display:block!important;width:100%!important}
+.side-menu nav a{min-height:72px!important}
+.global-nav{z-index:5000!important}
+@media(max-width:700px){.side-menu{width:100vw!important}.side-menu nav a{min-height:68px!important}}
