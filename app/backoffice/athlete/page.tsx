@@ -6,7 +6,7 @@ import BackofficeShell from '../BackofficeShell';
 import styles from '../backoffice.module.css';
 
 export default function Athlete360(){
-  const [data,setData]=useState<any>({body:[],labs:[],sweat:[],metrics:[]});
+  const [data,setData]=useState<any>({body:[],labs:[],sweat:[],metrics:[],interventions:[]});
   useEffect(()=>{(async()=>{const {data:{user}}=await supabase.auth.getUser();if(!user)return;const [body,labs,sweat,metrics,interventions]=await Promise.all([
     supabase.from('body_composition_checkpoints').select('*').eq('athlete_id',user.id).order('measured_at',{ascending:false}).limit(8),
     supabase.from('lab_panels').select('*,lab_results(*)').eq('athlete_id',user.id).order('collected_at',{ascending:false}).limit(5),
