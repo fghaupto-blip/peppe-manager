@@ -3,152 +3,136 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-type Zone = {
-  id: string;
-  label: string;
-  side: 'Frontal' | 'Posterior';
-  hint: string;
-};
+type View = 'Frontal' | 'Posterior';
+type Zone = { id:string; label:string; side:View; hint:string; family:string };
 
 const zones: Zone[] = [
-  { id: 'shoulder-r', label: 'Hombro derecho', side: 'Frontal', hint: 'Deltoides / manguito' },
-  { id: 'chest', label: 'Pectoral', side: 'Frontal', hint: 'Pectoral mayor' },
-  { id: 'core', label: 'Abdomen / core', side: 'Frontal', hint: 'Recto abdominal / oblicuos' },
-  { id: 'quad-r', label: 'Cuádriceps derecho', side: 'Frontal', hint: 'Vasto lateral / recto femoral' },
-  { id: 'quad-l', label: 'Cuádriceps izquierdo', side: 'Frontal', hint: 'Vasto lateral / recto femoral' },
-  { id: 'knee-r', label: 'Rodilla derecha', side: 'Frontal', hint: 'Región anterior' },
-  { id: 'calf-r', label: 'Pantorrilla derecha', side: 'Frontal', hint: 'Gemelo / sóleo' },
-  { id: 'calf-l', label: 'Pantorrilla izquierda', side: 'Frontal', hint: 'Gemelo / sóleo' },
-  { id: 'upper-back', label: 'Espalda alta', side: 'Posterior', hint: 'Trapecio / romboides' },
-  { id: 'lower-back', label: 'Espalda baja', side: 'Posterior', hint: 'Lumbar' },
-  { id: 'glute-r', label: 'Glúteo derecho', side: 'Posterior', hint: 'Glúteo mayor / medio' },
-  { id: 'ham-r', label: 'Isquiotibial derecho', side: 'Posterior', hint: 'Bíceps femoral / semitendinoso' },
-  { id: 'ham-l', label: 'Isquiotibial izquierdo', side: 'Posterior', hint: 'Bíceps femoral / semitendinoso' },
-  { id: 'achilles-r', label: 'Aquiles derecho', side: 'Posterior', hint: 'Tendón de Aquiles' },
+  {id:'shoulder-r',label:'Hombro derecho',side:'Frontal',hint:'Deltoides / manguito rotador',family:'Hombro'},
+  {id:'shoulder-l',label:'Hombro izquierdo',side:'Frontal',hint:'Deltoides / manguito rotador',family:'Hombro'},
+  {id:'chest',label:'Pectoral',side:'Frontal',hint:'Pectoral mayor / menor',family:'Torso'},
+  {id:'core',label:'Abdomen / core',side:'Frontal',hint:'Recto abdominal / oblicuos',family:'Core'},
+  {id:'adductor-r',label:'Aductor derecho',side:'Frontal',hint:'Aductores / gracilis',family:'Muslo'},
+  {id:'adductor-l',label:'Aductor izquierdo',side:'Frontal',hint:'Aductores / gracilis',family:'Muslo'},
+  {id:'quad-r',label:'Cuádriceps derecho',side:'Frontal',hint:'Vasto lateral / medial / recto femoral',family:'Muslo'},
+  {id:'quad-l',label:'Cuádriceps izquierdo',side:'Frontal',hint:'Vasto lateral / medial / recto femoral',family:'Muslo'},
+  {id:'knee-r',label:'Rodilla derecha',side:'Frontal',hint:'Región anterior / patelar',family:'Rodilla'},
+  {id:'knee-l',label:'Rodilla izquierda',side:'Frontal',hint:'Región anterior / patelar',family:'Rodilla'},
+  {id:'shin-r',label:'Tibial derecho',side:'Frontal',hint:'Tibial anterior',family:'Pierna'},
+  {id:'shin-l',label:'Tibial izquierdo',side:'Frontal',hint:'Tibial anterior',family:'Pierna'},
+  {id:'upper-back',label:'Espalda alta',side:'Posterior',hint:'Trapecio / romboides',family:'Espalda'},
+  {id:'lower-back',label:'Espalda baja',side:'Posterior',hint:'Lumbar / erectores espinales',family:'Espalda'},
+  {id:'glute-r',label:'Glúteo derecho',side:'Posterior',hint:'Glúteo mayor / medio',family:'Cadera'},
+  {id:'glute-l',label:'Glúteo izquierdo',side:'Posterior',hint:'Glúteo mayor / medio',family:'Cadera'},
+  {id:'ham-r',label:'Isquiotibial derecho',side:'Posterior',hint:'Bíceps femoral / semitendinoso',family:'Muslo'},
+  {id:'ham-l',label:'Isquiotibial izquierdo',side:'Posterior',hint:'Bíceps femoral / semitendinoso',family:'Muslo'},
+  {id:'calf-r',label:'Pantorrilla derecha',side:'Posterior',hint:'Gastrocnemio / sóleo',family:'Pierna'},
+  {id:'calf-l',label:'Pantorrilla izquierda',side:'Posterior',hint:'Gastrocnemio / sóleo',family:'Pierna'},
+  {id:'achilles-r',label:'Aquiles derecho',side:'Posterior',hint:'Tendón de Aquiles',family:'Tendón'},
+  {id:'achilles-l',label:'Aquiles izquierdo',side:'Posterior',hint:'Tendón de Aquiles',family:'Tendón'},
 ];
 
-export default function BodyMapPage() {
-  const [view, setView] = useState<'Frontal' | 'Posterior'>('Frontal');
-  const [zoneId, setZoneId] = useState('quad-r');
-  const [intensity, setIntensity] = useState(5);
-  const [energy, setEnergy] = useState(7);
-  const [legs, setLegs] = useState(6);
-  const [motivation, setMotivation] = useState(8);
-  const [stress, setStress] = useState(4);
+const history = [3,4,6,5,6,7,5];
 
-  const selected = useMemo(() => zones.find((z) => z.id === zoneId) ?? zones[3], [zoneId]);
-  const readiness = Math.max(0, Math.min(100, Math.round((energy * .28 + legs * .28 + motivation * .18 + (11 - stress) * .12 + (11 - intensity) * .14) * 10)));
-  const decision = intensity >= 7 || legs <= 4 ? 'MODIFICA' : readiness >= 72 ? 'LISTO PARA ENTRENAR' : 'CAUTION';
+export default function BodyMapPage(){
+  const [view,setView]=useState<View>('Frontal');
+  const [zoneId,setZoneId]=useState('quad-r');
+  const [energy,setEnergy]=useState(7);
+  const [legs,setLegs]=useState(6);
+  const [motivation,setMotivation]=useState(8);
+  const [stress,setStress]=useState(4);
+  const [intensity,setIntensity]=useState(5);
+  const [onset,setOnset]=useState('Hoy');
+  const [painType,setPainType]=useState('Muscular');
 
-  function selectZone(id: string) {
-    setZoneId(id);
-    const z = zones.find((item) => item.id === id);
-    if (z) setView(z.side);
+  const selected=useMemo(()=>zones.find(z=>z.id===zoneId)??zones[6],[zoneId]);
+  const readiness=Math.max(0,Math.min(100,Math.round((energy*.28+legs*.28+motivation*.18+(11-stress)*.12+(11-intensity)*.14)*10)));
+  const decision=intensity>=7||legs<=4?'MODIFICA':readiness>=72?'LISTO':'CAUTION';
+  const severity=intensity>=7?'Alta':intensity>=4?'Moderada':'Leve';
+
+  function selectZone(id:string){
+    const next=zones.find(z=>z.id===id); if(!next)return; setZoneId(id); setView(next.side);
   }
 
-  return (
-    <main className="bodymap-shell">
-      <header className="bodymap-header">
-        <div>
-          <span className="bodymap-brand">PEPPE · BODY INTELLIGENCE</span>
-          <h1>¿Dónde lo sientes hoy?</h1>
-          <p>Selecciona la zona, marca intensidad y Peppe la cruza con carga, recuperación y entrenamiento.</p>
-        </div>
-        <Link href="/body" className="bodymap-back">Composición corporal</Link>
-      </header>
+  return <main className="bi-page">
+    <div className="bi-topline"><div className="bi-logo"><span>p</span><b>Peppe</b><small>BODY INTELLIGENCE</small></div><div className="bi-top-actions"><Link href="/">Hoy</Link><Link href="/history">Historial</Link><Link href="/body">Composición corporal</Link></div></div>
 
-      <section className="bodymap-grid">
-        <article className="bodymap-panel wellness-panel">
-          <span className="bodymap-kicker">CHECK-IN</span>
-          <h2>¿Cómo te sientes hoy?</h2>
-          <Metric label="Energía" icon="⚡" value={energy} onChange={setEnergy} />
-          <Metric label="Piernas" icon="🦵" value={legs} onChange={setLegs} />
-          <Metric label="Motivación" icon="🔥" value={motivation} onChange={setMotivation} />
-          <Metric label="Estrés" icon="◉" value={stress} onChange={setStress} />
-          <Metric label="Dolor / molestias" icon="✣" value={intensity} onChange={setIntensity} danger />
+    <header className="bi-hero">
+      <div><span className="bi-eyebrow">READINESS · MUSCLE MAP · RECOVERY</span><h1>Tu cuerpo, convertido en señal.</h1><p>Marca dónde lo sientes y Peppe cruza esa señal con tu carga, tu recuperación y la sesión que viene.</p></div>
+      <div className="bi-status"><span>DECISIÓN ACTUAL</span><strong className={`decision-${decision.toLowerCase()}`}>{decision}</strong><small>{readiness}% readiness · dolor {intensity}/10</small></div>
+    </header>
 
-          <div className="readiness-card">
-            <span>ESTADO GENERAL</span>
-            <strong>{decision}</strong>
-            <div className="readiness-track"><i style={{ width: `${readiness}%` }} /></div>
-            <small>{readiness}% · decisión dinámica</small>
-          </div>
-        </article>
+    <section className="bi-main-grid">
+      <aside className="bi-card bi-checkin">
+        <div className="bi-card-head"><span>01</span><div><small>CHECK-IN</small><h2>¿Cómo te sientes hoy?</h2></div></div>
+        <Metric label="Energía" icon="⚡" value={energy} onChange={setEnergy}/>
+        <Metric label="Piernas" icon="◒" value={legs} onChange={setLegs}/>
+        <Metric label="Motivación" icon="↗" value={motivation} onChange={setMotivation}/>
+        <Metric label="Estrés" icon="◉" value={stress} onChange={setStress}/>
+        <Metric label="Dolor / molestias" icon="✣" value={intensity} onChange={setIntensity} danger/>
+        <div className="bi-readiness"><div><span>ESTADO DEL DÍA</span><b>{decision==='LISTO'?'Listo para entrenar':decision==='MODIFICA'?'Modifica la sesión':'Precaución'}</b></div><strong>{readiness}</strong><div className="bi-progress"><i style={{width:`${readiness}%`}}/></div><small>Se actualiza con cada cambio de sensación.</small></div>
+      </aside>
 
-        <article className="bodymap-panel anatomy-panel">
-          <div className="anatomy-title-row">
-            <div><span className="bodymap-kicker">MAPA CORPORAL</span><h2>Selecciona la zona</h2></div>
-            <div className="view-toggle"><button className={view === 'Frontal' ? 'active' : ''} onClick={() => setView('Frontal')}>Frontal</button><button className={view === 'Posterior' ? 'active' : ''} onClick={() => setView('Posterior')}>Posterior</button></div>
-          </div>
-
-          <div className="human-stage">
-            <svg className="human-map" viewBox="0 0 260 560" role="img" aria-label={`Mapa corporal ${view.toLowerCase()}`}>
-              <defs>
-                <linearGradient id="bodyGlow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#566171"/><stop offset="1" stopColor="#202a37"/></linearGradient>
-              </defs>
-              <circle cx="130" cy="55" r="34" fill="url(#bodyGlow)" stroke="#7d8999"/>
-              <rect x="116" y="86" width="28" height="32" rx="10" fill="#424d5c"/>
-              <path d="M83 112 Q130 92 177 112 L191 230 Q165 267 130 274 Q95 267 69 230 Z" fill="#303b49" stroke="#758091"/>
-              <path d="M69 123 Q45 137 38 177 L31 270 Q32 290 46 291 L59 207 L82 153 Z" fill="#33404f" stroke="#6f7b8b"/>
-              <path d="M191 123 Q215 137 222 177 L229 270 Q228 290 214 291 L201 207 L178 153 Z" fill="#33404f" stroke="#6f7b8b"/>
-              <path d="M93 269 L122 270 L116 425 Q111 492 99 540 L74 540 Q82 459 76 393 Z" fill="#34404d" stroke="#6f7b8b"/>
-              <path d="M167 269 L138 270 L144 425 Q149 492 161 540 L186 540 Q178 459 184 393 Z" fill="#34404d" stroke="#6f7b8b"/>
-
-              {view === 'Frontal' ? <>
-                <Zone id="shoulder-r" selected={zoneId} d="M157 111 Q180 111 191 131 L180 162 L158 145 Z" onSelect={selectZone}/>
-                <Zone id="chest" selected={zoneId} d="M91 126 Q130 108 169 126 L164 180 Q130 194 96 180 Z" onSelect={selectZone}/>
-                <Zone id="core" selected={zoneId} d="M104 184 L156 184 L158 244 Q130 262 102 244 Z" onSelect={selectZone}/>
-                <Zone id="quad-l" selected={zoneId} d="M80 285 L119 280 L113 386 L83 385 Z" onSelect={selectZone}/>
-                <Zone id="quad-r" selected={zoneId} d="M141 280 L180 285 L177 385 L147 386 Z" onSelect={selectZone}/>
-                <Zone id="knee-r" selected={zoneId} d="M148 386 L177 386 L175 420 L146 420 Z" onSelect={selectZone}/>
-                <Zone id="calf-l" selected={zoneId} d="M80 422 L110 422 L104 500 L80 500 Z" onSelect={selectZone}/>
-                <Zone id="calf-r" selected={zoneId} d="M150 422 L180 422 L180 500 L156 500 Z" onSelect={selectZone}/>
-              </> : <>
-                <Zone id="upper-back" selected={zoneId} d="M88 122 Q130 104 172 122 L166 182 L94 182 Z" onSelect={selectZone}/>
-                <Zone id="lower-back" selected={zoneId} d="M99 184 L161 184 L158 245 Q130 258 102 245 Z" onSelect={selectZone}/>
-                <Zone id="glute-r" selected={zoneId} d="M134 246 Q162 245 176 273 L165 315 L137 298 Z" onSelect={selectZone}/>
-                <Zone id="ham-l" selected={zoneId} d="M80 306 L117 300 L112 390 L85 390 Z" onSelect={selectZone}/>
-                <Zone id="ham-r" selected={zoneId} d="M143 300 L180 306 L175 390 L148 390 Z" onSelect={selectZone}/>
-                <Zone id="achilles-r" selected={zoneId} d="M158 458 L177 458 L180 522 L162 522 Z" onSelect={selectZone}/>
-              </>}
-            </svg>
-          </div>
-
-          <div className="selected-zone"><span>Zona seleccionada</span><strong>{selected.label}</strong><small>{selected.hint}</small></div>
-        </article>
-
-        <article className="bodymap-panel insight-panel">
-          <span className="bodymap-kicker">DETALLE DE LA MOLESTIA</span>
-          <h2>{selected.label}</h2>
-          <p className="muscle-hint">{selected.hint}</p>
-          <div className={`pain-pill p${Math.min(9, intensity)}`}>Intensidad {intensity}/10</div>
-
-          <div className="insight-block">
-            <span>POSIBLES RELACIONES</span>
-            <ul><li>Volumen o intensidad reciente de carrera</li><li>Fuerza, pádel o trabajo complementario</li><li>Sueño y recuperación de las últimas 48 h</li></ul>
-          </div>
-          <div className="recommendation-card">
-            <span>RECOMENDACIÓN PEPPE</span>
-            <strong>{intensity >= 7 ? 'Reduce carga y evita intensidad.' : intensity >= 4 ? 'Modifica la sesión y protege la zona.' : 'Entrena, pero monitoriza evolución.'}</strong>
-            <p>La recomendación final debe cruzarse con tu sesión planificada, HRV, sueño, carga y evolución de esta molestia.</p>
-          </div>
-          <Link href="/decision" className="bodymap-cta">Ver decisión de entrenamiento</Link>
-        </article>
+      <section className="bi-card bi-anatomy">
+        <div className="bi-card-head anatomy-head"><span>02</span><div><small>MAPA CORPORAL</small><h2>Selecciona la zona</h2></div><div className="bi-toggle"><button className={view==='Frontal'?'active':''} onClick={()=>setView('Frontal')}>Frontal</button><button className={view==='Posterior'?'active':''} onClick={()=>setView('Posterior')}>Posterior</button></div></div>
+        <div className="bi-stage"><Anatomy view={view} selected={zoneId} onSelect={selectZone}/></div>
+        <div className="bi-selected"><div><small>ZONA SELECCIONADA</small><strong>{selected.label}</strong><span>{selected.hint}</span></div><div className="bi-zone-meta"><span>{selected.family}</span><b>{severity}</b></div></div>
       </section>
 
-      <section className="bodymap-lower-grid">
-        <article className="bodymap-panel"><span className="bodymap-kicker">EJERCICIOS</span><h2>Trabajo sugerido</h2><div className="exercise-list"><div><b>01</b><span>Movilidad específica<small>2–4 min · sin dolor creciente</small></span></div><div><b>02</b><span>Activación controlada<small>2–3 series · baja carga</small></span></div><div><b>03</b><span>Isométricos / estabilidad<small>Según zona seleccionada</small></span></div></div></article>
-        <article className="bodymap-panel"><span className="bodymap-kicker">PATRÓN DETECTADO</span><h2>Molestia × entrenamiento</h2><div className="mini-bars">{[42,74,61,69,48,35,24].map((h, i) => <i key={i} style={{height:`${h}%`}} />)}</div><p className="bodymap-copy">Peppe podrá mostrar si la molestia coincide con aumentos de carga, dobles sesiones, poco sueño o cambios de superficie.</p></article>
-        <article className="bodymap-panel"><span className="bodymap-kicker">SEGUIMIENTO</span><h2>Evolución</h2><div className="evolution-line"><i/><i/><i/><i/><i/></div><div className="today-score"><span>Hoy</span><strong>{intensity}/10</strong></div><p className="bodymap-copy">Mantendremos la escala diaria y la ubicación anatómica para detectar recurrencia y tendencia.</p></article>
-      </section>
-    </main>
-  );
+      <aside className="bi-card bi-detail">
+        <div className="bi-card-head"><span>03</span><div><small>DETALLE</small><h2>{selected.label}</h2></div></div>
+        <div className="bi-detail-summary"><span className={`bi-severity s${Math.min(intensity,9)}`}>Dolor {severity.toLowerCase()}</span><strong>{intensity}<small>/10</small></strong></div>
+        <label className="bi-field"><span>¿Desde cuándo?</span><select value={onset} onChange={e=>setOnset(e.target.value)}><option>Hoy</option><option>Ayer</option><option>2–3 días</option><option>1 semana o más</option></select></label>
+        <label className="bi-field"><span>Tipo de molestia</span><select value={painType} onChange={e=>setPainType(e.target.value)}><option>Muscular</option><option>Articular</option><option>Tendón</option><option>Rigidez</option><option>Otro</option></select></label>
+        <div className="bi-cause"><small>PATRONES A REVISAR</small><div><b>01</b><span><strong>Carga reciente</strong><em>Volumen e intensidad de los últimos 7 días</em></span></div><div><b>02</b><span><strong>Recuperación</strong><em>Sueño, HRV y fatiga acumulada</em></span></div><div><b>03</b><span><strong>Actividad complementaria</strong><em>Fuerza, bici, pádel u otro estímulo</em></span></div></div>
+        <div className="bi-reco"><small>RECOMENDACIÓN PEPPE</small><strong>{intensity>=7?'Reduce carga y evita intensidad.':intensity>=4?'Protege la zona y modifica la sesión.':'Puedes entrenar, monitorizando la evolución.'}</strong><p>La decisión final se cruza con tu plan, carga, sueño y evolución de la molestia.</p></div>
+        <Link className="bi-primary" href="/decision">Ver decisión completa <span>→</span></Link>
+      </aside>
+    </section>
+
+    <section className="bi-lower-grid">
+      <article className="bi-card bi-exercises"><div className="bi-section-title"><small>INTERVENCIÓN</small><h2>Qué hacer ahora</h2></div><div className="bi-tabs"><button className="active">Movilidad</button><button>Fuerza</button><button>Estabilidad</button><button>Liberación</button></div><Exercise n="01" title="Movilidad específica" meta="2–4 min · rango cómodo"/><Exercise n="02" title="Activación controlada" meta="2–3 series · carga baja"/><Exercise n="03" title="Isométricos / estabilidad" meta="30–45 s · según zona"/><button className="bi-secondary">Marcar rutina como completada</button></article>
+      <article className="bi-card bi-pattern"><div className="bi-section-title"><small>CONTEXTO</small><h2>Relación con tu entrenamiento</h2></div><div className="bi-week"><span>J<br/><b>27</b></span><span>V<br/><b>28</b></span><span>S<br/><b>29</b></span><span>D<br/><b>30</b></span><span>L<br/><b>31</b></span><span className="today">M<br/><b>01</b></span><span>X<br/><b>02</b></span></div><div className="bi-chart"><div className="bi-chart-label"><span>CARGA</span><b>Patrón alto</b></div><div className="bi-bars">{[42,78,64,72,55,38,24].map((h,i)=><i key={i} style={{height:`${h}%`}}/>)}</div></div><div className="bi-pattern-note"><span>↗</span><div><strong>Patrón para investigar</strong><p>La molestia aparece cerca de días con mayor carga y menor recuperación. Peppe lo validará con tu historial real.</p></div></div></article>
+      <article className="bi-card bi-trend"><div className="bi-section-title"><small>EVOLUCIÓN</small><h2>Cómo viene cambiando</h2></div><div className="bi-linechart"><svg viewBox="0 0 420 160" preserveAspectRatio="none"><polyline points={history.map((v,i)=>`${18+i*64},${142-v*16}`).join(' ')} fill="none" stroke="currentColor" strokeWidth="3"/><line x1="0" y1="142" x2="420" y2="142" className="axis"/>{history.map((v,i)=><circle key={i} cx={18+i*64} cy={142-v*16} r={i===history.length-1?6:4}/>)}</svg></div><div className="bi-trend-row"><span>Hoy</span><strong>{intensity}/10</strong></div><div className="bi-trend-row"><span>Zona</span><b>{selected.label}</b></div><div className="bi-trend-row"><span>Tipo</span><b>{painType}</b></div><p className="bi-footnote">El valor real será la tendencia: recurrencia, duración, lado, músculo y relación con la carga.</p></article>
+    </section>
+  </main>
 }
 
-function Metric({ label, icon, value, onChange, danger = false }: { label: string; icon: string; value: number; onChange: (v: number) => void; danger?: boolean }) {
-  return <label className="body-metric"><div><span className="metric-icon">{icon}</span><b>{label}</b><strong className={danger ? 'danger' : ''}>{value}</strong></div><input type="range" min="1" max="10" value={value} onChange={(e) => onChange(Number(e.target.value))}/><small><span>1</span><span>5</span><span>10</span></small></label>;
-}
+function Metric({label,icon,value,onChange,danger=false}:{label:string;icon:string;value:number;onChange:(v:number)=>void;danger?:boolean}){return <label className={`bi-metric ${danger?'danger':''}`}><div><span className="bi-icon">{icon}</span><b>{label}</b><strong>{value}</strong></div><input type="range" min="1" max="10" value={value} onChange={e=>onChange(Number(e.target.value))}/><small><span>1</span><span>5</span><span>10</span></small></label>}
+function Exercise({n,title,meta}:{n:string;title:string;meta:string}){return <div className="bi-exercise"><b>{n}</b><span><strong>{title}</strong><small>{meta}</small></span><button aria-label={title}>▶</button></div>}
+function ZonePath({id,d,selected,onSelect}:{id:string;d:string;selected:string;onSelect:(id:string)=>void}){return <path d={d} className={`bi-muscle ${selected===id?'selected':''}`} onClick={()=>onSelect(id)} role="button" tabIndex={0} onKeyDown={e=>{if(e.key==='Enter'||e.key===' ')onSelect(id)}}/>}
 
-function Zone({ id, d, selected, onSelect }: { id: string; d: string; selected: string; onSelect: (id: string) => void }) {
-  return <path className={`muscle-zone ${selected === id ? 'selected' : ''}`} d={d} onClick={() => onSelect(id)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(id); }} />;
+function Anatomy({view,selected,onSelect}:{view:View;selected:string;onSelect:(id:string)=>void}){
+  return <svg className="bi-human" viewBox="0 0 360 760" role="img" aria-label={`Anatomía ${view.toLowerCase()}`}>
+    <defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#303b48"/><stop offset="1" stopColor="#111924"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <ellipse cx="180" cy="48" rx="35" ry="42" fill="url(#skin)" stroke="#4a5664"/><path d="M165 87h30l11 28h-52z" fill="#222d38"/>
+    <path d="M111 118Q180 88 249 118l22 145-54 78h-74l-54-78z" fill="#1a2530" stroke="#3b4856"/>
+    <path d="M104 126Q77 139 63 187L43 336l27 4 24-130 31-62z" fill="#1a2530" stroke="#3b4856"/><path d="M256 126q27 13 41 61l20 149-27 4-24-130-31-62z" fill="#1a2530" stroke="#3b4856"/>
+    <path d="M129 333h45l-9 188-22 196H99l16-198z" fill="#1a2530" stroke="#3b4856"/><path d="M231 333h-45l9 188 22 196h44l-16-198z" fill="#1a2530" stroke="#3b4856"/>
+    {view==='Frontal'?<>
+      <ZonePath id="shoulder-l" selected={selected} onSelect={onSelect} d="M104 126q20-20 42-13l-8 54-31 17-23-25z"/>
+      <ZonePath id="shoulder-r" selected={selected} onSelect={onSelect} d="M256 126q-20-20-42-13l8 54 31 17 23-25z"/>
+      <ZonePath id="chest" selected={selected} onSelect={onSelect} d="M143 123q37-17 74 0l-2 77q-35 27-70 0z"/>
+      <ZonePath id="core" selected={selected} onSelect={onSelect} d="M151 207h58l10 98-39 31-39-31z"/>
+      <ZonePath id="adductor-l" selected={selected} onSelect={onSelect} d="M143 344l31-2-12 128-27-17z"/>
+      <ZonePath id="adductor-r" selected={selected} onSelect={onSelect} d="M217 344l-31-2 12 128 27-17z"/>
+      <ZonePath id="quad-l" selected={selected} onSelect={onSelect} d="M116 347l29-7 17 132-19 56-31-18z"/>
+      <ZonePath id="quad-r" selected={selected} onSelect={onSelect} d="M244 347l-29-7-17 132 19 56 31-18z"/>
+      <ZonePath id="knee-l" selected={selected} onSelect={onSelect} d="M112 510l31 18-4 46-31 2z"/>
+      <ZonePath id="knee-r" selected={selected} onSelect={onSelect} d="M248 510l-31 18 4 46 31 2z"/>
+      <ZonePath id="shin-l" selected={selected} onSelect={onSelect} d="M108 581h30l-8 124h-28z"/>
+      <ZonePath id="shin-r" selected={selected} onSelect={onSelect} d="M252 581h-30l8 124h28z"/>
+    </>:<>
+      <ZonePath id="upper-back" selected={selected} onSelect={onSelect} d="M124 119q56-25 112 0l-16 93-40 23-40-23z"/>
+      <ZonePath id="lower-back" selected={selected} onSelect={onSelect} d="M144 216h72l12 86-48 35-48-35z"/>
+      <ZonePath id="glute-l" selected={selected} onSelect={onSelect} d="M129 320q28-9 46 20l-10 67-43 11-13-54z"/>
+      <ZonePath id="glute-r" selected={selected} onSelect={onSelect} d="M231 320q-28-9-46 20l10 67 43 11 13-54z"/>
+      <ZonePath id="ham-l" selected={selected} onSelect={onSelect} d="M120 419l45-7-10 116-17 43-31-9z"/>
+      <ZonePath id="ham-r" selected={selected} onSelect={onSelect} d="M240 419l-45-7 10 116 17 43 31-9z"/>
+      <ZonePath id="calf-l" selected={selected} onSelect={onSelect} d="M107 576l31 2 11 64-22 55-28-6z"/>
+      <ZonePath id="calf-r" selected={selected} onSelect={onSelect} d="M253 576l-31 2-11 64 22 55 28-6z"/>
+      <ZonePath id="achilles-l" selected={selected} onSelect={onSelect} d="M113 682h17l4 35h-24z"/>
+      <ZonePath id="achilles-r" selected={selected} onSelect={onSelect} d="M247 682h-17l-4 35h24z"/>
+    </>}
+    <line x1="180" y1="112" x2="180" y2="716" className="bi-midline"/>
+  </svg>
 }
