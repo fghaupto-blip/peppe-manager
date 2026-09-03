@@ -9,6 +9,7 @@ import './peppe-enhancer.css';
 import './peppe-weather.css';
 import './responsive-nav.css';
 import './norda-layout-v2.css';
+import './peppe-dashboard-v3.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 import PeppeEnhancerV2 from './peppe-enhancer-v2';
