@@ -10,10 +10,12 @@ import './peppe-weather.css';
 import './responsive-nav.css';
 import './norda-layout-v2.css';
 import './peppe-dashboard-v3.css';
+import './home-dashboard-v4.css';
 import type { Metadata } from 'next';
 import Navigation from './navigation';
 import PeppeEnhancerV2 from './peppe-enhancer-v2';
 import PeppeWeather from './peppe-weather';
+import HomeDashboardV4 from './home-dashboard-v4';
 
 export const metadata: Metadata = {
   title: 'Peppe Manager',
@@ -25,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es">
       <body>
         {children}
+        <HomeDashboardV4 />
         <PeppeEnhancerV2 />
         <PeppeWeather />
         <Navigation />
