@@ -25,21 +25,24 @@ export default function Navigation() {
   useEffect(() => setOpen(false), [pathname]);
   async function signOut() { await supabase.auth.signOut(); setOpen(false); window.location.assign('/'); }
   if (!user) return null;
-  const core = [{ href: '/', label: 'Hoy', icon: '○' },{ href: '/peppe', label: 'Peppe', icon: '✦' },{ href: '/body-map', label: 'Cuerpo', icon: '◇' }];
+  const core = [
+    { href: '/', label: 'Inicio', icon: '●' },
+    { href: '/peppe', label: 'Ahora', icon: '◉' },
+    { href: '/history', label: 'Hoy', icon: '▣' },
+    { href: '/settings', label: 'Semana', icon: '▭' },
+    { href: '/intelligence', label: 'Progreso', icon: '⌁' },
+    { href: '/body', label: 'Cuerpo', icon: '♙' },
+    { href: '/study', label: 'Nutrición', icon: '◌' },
+    { href: '/biochemistry', label: 'Bioquímica', icon: '⌘' },
+    { href: '/body-map', label: 'Mapa corporal', icon: '♧' },
+    { href: '/integrations', label: 'Integraciones', icon: '⚙' },
+  ];
   return <>
     <button className="menu-trigger" type="button" aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen((value) => !value)}><span /><span /><span /></button>
     {open && <><button className="menu-backdrop" aria-label="Cerrar menú" onClick={() => setOpen(false)} /><aside className="side-menu" aria-label="Menú secundario"><div className="side-menu-head"><div><span className="eyebrow">PEPPE</span><strong>Más</strong></div><button className="menu-close" onClick={() => setOpen(false)} aria-label="Cerrar">×</button></div><nav>
       <Link href="/backoffice"><span>{backoffice?'Intelligence Console':'🔒 Intelligence Console'}</span><small>{backoffice?'Backoffice privado · Command Center, Athlete 360 y auditoría':'Backoffice privado · acceso sólo para usuarios autorizados'}</small></Link>
-      <Link href="/body-map"><span>Mapa corporal</span><small>Selecciona molestias por zona y cruza dolor, carga y recuperación</small></Link>
-      <Link href="/body"><span>Composición corporal</span><small>Peso, grasa, agua e IMC con seguimiento longitudinal</small></Link>
-      <Link href="/biochemistry"><span>Perfil bioquímico</span><small>Laboratorio, comparación longitudinal y recordatorio automático cada 3 o 6 meses</small></Link>
       <Link href="/decision"><span>Decision Engine</span><small>GO, CAUTION, MODIFY o RECOVER con confianza y por qué</small></Link>
       <Link href="/session-response"><span>Session Response</span><small>Respuesta real del cuerpo después del entrenamiento</small></Link>
-      <Link href="/history"><span>Historial funcional</span><small>Decisiones, respuestas, labs y composición corporal</small></Link>
-      <Link href="/intelligence"><span>Performance Intelligence</span><small>Readiness, fuel, hidratación, clima y modelos</small></Link>
-      <Link href="/study"><span>Estudio diario</span><small>Peso, glucosa y registros de alta frecuencia</small></Link>
-      <Link href="/settings"><span>Plan y rutina</span><small>Objetivo, horarios y configuración del día</small></Link>
-      <Link href="/integrations"><span>Fuentes de datos</span><small>Strava y próximas integraciones</small></Link>
       <Link href="/moment"><span>Momento pendiente</span><small>Preguntas programadas por Peppe</small></Link>
       <button className="side-menu-signout" type="button" onClick={signOut}>Cerrar sesión</button>
     </nav><div className="side-menu-foot">Peppe pregunta sólo lo que falta.</div></aside></>}
