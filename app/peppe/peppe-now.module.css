@@ -1,0 +1,872 @@
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px 20px 120px;
+  color: #101828;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.topbar h1 {
+  margin: 8px 0 8px;
+  max-width: 760px;
+  font-size: clamp(36px, 5vw, 62px);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+.topbar p {
+  max-width: 760px;
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.addButton,
+.secondaryLink,
+.textLink {
+  text-decoration: none;
+}
+
+.addButton {
+  white-space: nowrap;
+  border: 1px solid #dfe3e8;
+  background: rgba(255, 255, 255, .88);
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, .05);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.3fr .7fr;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.heroMain,
+.weatherCard,
+.panel,
+.weekSection {
+  background: #fff;
+  border: 1px solid #e6e9ee;
+  box-shadow: 0 16px 40px rgba(17, 24, 39, .05);
+}
+
+.heroMain {
+  min-height: 370px;
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(204, 255, 0, .11), transparent 29%),
+    #fff;
+}
+
+.statusRow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 34px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #f2f4f7;
+  font-size: 12px;
+}
+
+.statusRow strong {
+  font-size: 12px;
+}
+
+.statusRow > span:last-child {
+  color: #667085;
+  font-weight: 800;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #72c657;
+  box-shadow: 0 0 0 5px rgba(114, 198, 87, .12);
+}
+
+.kicker {
+  display: block;
+  color: #7b8491;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.heroMain h2 {
+  margin: 10px 0 12px;
+  max-width: 800px;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.heroMain > p {
+  max-width: 760px;
+  margin: 0;
+  color: #5e6875;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.actionList {
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.actionList > div {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.actionList span {
+  font-weight: 950;
+}
+
+.actionList p {
+  margin: 0;
+  color: #313b49;
+  line-height: 1.45;
+}
+
+.weatherCard {
+  border-radius: 30px;
+  padding: 28px;
+  background: #111827;
+  color: white;
+}
+
+.weatherCard .kicker {
+  color: #a7b0be;
+}
+
+.weatherCard h3 {
+  margin: 12px 0 18px;
+  font-size: 25px;
+  line-height: 1.08;
+  letter-spacing: -.03em;
+}
+
+.weatherCard p,
+.weatherCard small {
+  color: #bfc6d1;
+  line-height: 1.5;
+}
+
+.weatherStart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 22px 0;
+  padding: 16px 0;
+  border-top: 1px solid #2c3443;
+  border-bottom: 1px solid #2c3443;
+}
+
+.weatherStart span {
+  color: #aeb6c2;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.weatherStart strong {
+  font-size: 40px;
+  letter-spacing: -.055em;
+}
+
+.weatherGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.weatherGrid span {
+  padding: 10px 12px;
+  border: 1px solid #2c3443;
+  border-radius: 12px;
+  color: #e8ebf0;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.horizonHeader {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.horizonHeader > div {
+  padding: 14px 16px;
+  border: 1px solid #e5e8ed;
+  border-radius: 15px;
+  background: rgba(255,255,255,.72);
+}
+
+.horizonHeader span,
+.horizonHeader strong {
+  display: block;
+}
+
+.horizonHeader span {
+  margin-bottom: 4px;
+  color: #7b8491;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.horizonHeader strong {
+  font-size: 13px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1.3fr .7fr;
+  gap: 16px;
+}
+
+.sideStack {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.panel {
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.panel h2,
+.weekSection h2 {
+  margin: 8px 0 8px;
+  font-size: 26px;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.panel > p,
+.weekSection p {
+  color: #667085;
+  line-height: 1.55;
+}
+
+.panelHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.contextButton {
+  padding: 9px 12px;
+  border: 1px solid #e2e6eb;
+  border-radius: 999px;
+  background: #fff;
+  color: #556070;
+  font-size: 12px;
+}
+
+.questionBox {
+  padding: 18px;
+  border: 1px solid #e4e7ec;
+  border-radius: 18px;
+  background: #f9fafb;
+}
+
+.questionBox strong {
+  display: block;
+  font-size: 19px;
+}
+
+.questionBox p {
+  margin: 6px 0 18px;
+  color: #667085;
+}
+
+.scale {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 5px;
+}
+
+.scale button {
+  min-width: 0;
+  padding: 10px 0;
+  border: 1px solid #dde2e7;
+  border-radius: 10px;
+  background: #fff;
+  color: #5a6472;
+}
+
+.scale button.scaleActive {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+}
+
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: #929aa5;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.primaryButton,
+.secondaryButton {
+  margin-top: 14px;
+  border-radius: 12px;
+  padding: 11px 15px;
+  font-weight: 850;
+}
+
+.primaryButton {
+  background: #111827;
+  color: white;
+}
+
+.secondaryButton {
+  border: 1px solid #dfe3e8;
+  background: #fff;
+  color: #3f4957;
+}
+
+.quietState {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dfe9dc;
+  border-radius: 18px;
+  background: #f8fbf7;
+}
+
+.quietState > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: #e6f4e2;
+  font-weight: 950;
+}
+
+.quietState strong {
+  display: block;
+  margin: 1px 0 5px;
+}
+
+.quietState p {
+  margin: 0;
+  color: #62705f;
+  line-height: 1.45;
+}
+
+.painPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f3;
+}
+
+.painPrompt strong {
+  display: block;
+  margin-top: 5px;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 12px;
+  background: #eef1f4;
+}
+
+.segmented button,
+.painTiming button {
+  margin: 0;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: transparent;
+  color: #697382;
+  font-size: 12px;
+}
+
+.segmented button.segmentActive,
+.painTiming button.segmentActive {
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(17,24,39,.08);
+}
+
+.painDetail {
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #171d27;
+  color: #fff;
+}
+
+.painDetail .kicker {
+  color: #aeb6c2;
+}
+
+.painDetail h3 {
+  margin: 8px 0 6px;
+  font-size: 24px;
+}
+
+.painDetail p {
+  margin: 0 0 18px;
+  color: #b8c0cc;
+  line-height: 1.5;
+}
+
+.muscleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.muscleGrid button {
+  margin: 0;
+  padding: 10px 9px;
+  border: 1px solid #333c49;
+  border-radius: 10px;
+  background: #202733;
+  color: #dbe1e9;
+  font-size: 11px;
+  text-align: left;
+}
+
+.muscleGrid button.muscleActive {
+  border-color: #d9ff73;
+  background: #d9ff73;
+  color: #131923;
+}
+
+.painTiming {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.painTiming > span {
+  margin-right: 4px;
+  color: #aeb6c2;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.painDetail .primaryButton {
+  background: #fff;
+  color: #111827;
+}
+
+.contextGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f3;
+}
+
+.contextGrid > div {
+  padding: 13px;
+  border-radius: 13px;
+  background: #f6f7f9;
+}
+
+.contextGrid span,
+.contextGrid strong,
+.contextGrid small {
+  display: block;
+}
+
+.contextGrid span {
+  color: #7b8491;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.contextGrid strong {
+  margin: 6px 0 4px;
+  font-size: 13px;
+}
+
+.contextGrid small {
+  color: #8b94a0;
+}
+
+.bodyValues {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+
+.bodyValues > div {
+  padding: 15px;
+  border-radius: 15px;
+  background: #f5f7f9;
+}
+
+.bodyValues span,
+.bodyValues strong {
+  display: block;
+}
+
+.bodyValues span {
+  color: #7a8491;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.bodyValues strong {
+  margin-top: 5px;
+  font-size: 23px;
+  letter-spacing: -.03em;
+}
+
+.twoButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.twoButtons button {
+  width: 100%;
+}
+
+.bodyForm {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.bodyForm label {
+  display: grid;
+  gap: 5px;
+  color: #596371;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.bodyForm input {
+  margin: 0;
+}
+
+.nutritionHint {
+  display: grid;
+  gap: 5px;
+  margin: 14px 0;
+  padding: 13px;
+  border-radius: 13px;
+  background: #f6f7f9;
+}
+
+.nutritionHint strong {
+  font-size: 13px;
+}
+
+.nutritionHint span {
+  color: #7c8591;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.textLink {
+  color: #111827;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.integrationList {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.integrationList > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #edf0f3;
+  font-size: 12px;
+}
+
+.integrationList > div:first-child {
+  border-top: 0;
+}
+
+.integrationList strong {
+  color: #4f7b3f;
+}
+
+.integrationList p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.5;
+}
+
+.weekSection {
+  margin-top: 16px;
+  padding: 28px;
+  border-radius: 26px;
+}
+
+.weekTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.weekTop p {
+  margin: 0;
+}
+
+.secondaryLink {
+  white-space: nowrap;
+  padding: 10px 13px;
+  border: 1px solid #dfe3e8;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.weekTimeline {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px;
+  margin-top: 22px;
+}
+
+.weekDay {
+  min-height: 148px;
+  padding: 13px;
+  border: 1px solid #e4e7ec;
+  border-radius: 15px;
+  background: #fafbfc;
+}
+
+.weekDay span,
+.weekDay strong,
+.weekDay small,
+.weekDay b {
+  display: block;
+}
+
+.weekDay span {
+  color: #7f8894;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.weekDay strong {
+  margin: 10px 0 6px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.weekDay small {
+  min-height: 34px;
+  color: #7b8490;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.weekDay b {
+  margin-top: 12px;
+  color: #4e5968;
+  font-size: 10px;
+}
+
+.weekDone {
+  border-color: #dce9d8;
+  background: #f8fbf7;
+}
+
+.weekDone b {
+  color: #4f7b3f;
+}
+
+.weekMissed {
+  border-color: #f0dbd1;
+  background: #fff8f5;
+}
+
+.weekMissed b {
+  color: #a85939;
+}
+
+.emptyWeek {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #f7f8fa;
+  color: #697381;
+  line-height: 1.5;
+}
+
+.recoveryBox {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 17px 18px;
+  border-radius: 16px;
+  background: #111827;
+  color: #fff;
+}
+
+.recoveryBox span {
+  color: #aab3bf;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.recoveryBox strong {
+  font-size: 16px;
+}
+
+.recoveryBox p {
+  margin: 0;
+  color: #c4cbd5;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px 4px 0;
+  color: #89919d;
+  font-size: 11px;
+}
+
+.footer strong {
+  color: #67717f;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .weatherCard {
+    min-height: 0;
+  }
+
+  .weekTimeline {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding: 24px 14px 110px;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+
+  .addButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .heroMain,
+  .weatherCard {
+    border-radius: 22px;
+  }
+
+  .heroMain {
+    min-height: 0;
+  }
+
+  .horizonHeader {
+    overflow-x: auto;
+    grid-template-columns: repeat(3, minmax(165px, 1fr));
+    padding-bottom: 4px;
+  }
+
+  .panelHead,
+  .painPrompt,
+  .weekTop,
+  .footer {
+    flex-direction: column;
+  }
+
+  .scale {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .muscleGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .weekTimeline {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .weekDay {
+    min-width: 145px;
+  }
+}
+
+@media (max-width: 460px) {
+  .weatherGrid,
+  .bodyValues,
+  .twoButtons,
+  .contextGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .muscleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel,
+  .weekSection {
+    padding: 19px;
+  }
+}
