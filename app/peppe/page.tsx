@@ -671,8 +671,9 @@ export default function PeppePage() {
             <div className={styles.painDetail}>
               <div>
                 <span className={styles.kicker}>LOCALIZA LA MOLESTIA</span>
-                <h3>Mapa muscular rápido</h3>
-                <p>Selecciona sólo la zona principal. Peppe la cruza con carga, sesión y evolución.</p>
+                <h3>Usa el mapa corporal cuando necesites precisión.</h3>
+                <p>Puedes marcar una zona rápida aquí o abrir Body Intelligence para trabajar frontal/posterior, músculo, intensidad y patrones de carga.</p>
+                <Link href="/body-map" className={styles.bodyMapLink}>Abrir mapa corporal interactivo →</Link>
               </div>
               <div className={styles.muscleGrid}>
                 {muscleZones.map((zone) => (
