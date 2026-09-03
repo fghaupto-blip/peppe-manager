@@ -1,0 +1,179 @@
+/* Peppe Dashboard v3 — warm editorial performance UI */
+:root{
+  --peppe-ink:#10110f;
+  --peppe-muted:#6f716b;
+  --peppe-paper:#f6f4ee;
+  --peppe-panel:#fbfaf6;
+  --peppe-line:#dddcd5;
+  --peppe-green:#74ad3f;
+  --peppe-green-soft:#eef5e6;
+  --peppe-orange:#e89b27;
+  --peppe-red:#e75f4c;
+}
+
+html,body{background:var(--peppe-paper)!important;color:var(--peppe-ink)!important}
+body{padding-bottom:0!important}
+
+/* Desktop navigation becomes a calm left rail */
+@media(min-width:1080px){
+  .global-nav.core-nav{
+    position:fixed!important;
+    inset:0 auto 0 0!important;
+    transform:none!important;
+    width:190px!important;
+    height:100dvh!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:flex-start!important;
+    align-items:stretch!important;
+    gap:6px!important;
+    padding:128px 18px 24px!important;
+    border:0!important;
+    border-right:1px solid var(--peppe-line)!important;
+    background:rgba(246,244,238,.96)!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(16px)!important;
+    z-index:30!important;
+  }
+  .global-nav.core-nav::before{
+    content:'PEPPE\A M A N A G E R';
+    white-space:pre;
+    position:absolute;
+    top:34px;
+    left:30px;
+    font-weight:800;
+    font-size:17px;
+    line-height:1.55;
+    letter-spacing:.02em;
+  }
+  .global-nav.core-nav a{
+    width:100%!important;
+    justify-content:flex-start!important;
+    gap:12px!important;
+    padding:12px 14px!important;
+    border-radius:10px!important;
+    color:#252622!important;
+    font-size:13px!important;
+    font-weight:650!important;
+    text-decoration:none!important;
+  }
+  .global-nav.core-nav a span{width:18px;text-align:center}
+  .global-nav.core-nav a.active{
+    background:#eeece5!important;
+    color:#111!important;
+  }
+  .global-nav.core-nav a.active::after{display:none!important}
+  .menu-trigger{
+    position:fixed!important;
+    top:34px!important;
+    right:34px!important;
+    width:52px!important;
+    height:52px!important;
+    border-radius:50%!important;
+    background:#111!important;
+    z-index:50!important;
+  }
+  .menu-trigger span{background:#fff!important;width:21px!important}
+  [class*="peppe-now_shell"]{margin-left:190px!important;max-width:none!important;width:calc(100% - 190px)!important;padding:46px clamp(28px,4vw,70px) 90px!important}
+}
+
+/* Main hierarchy */
+[class*="peppe-now_topbar"]{align-items:flex-end!important;margin-bottom:28px!important;padding-right:70px}
+[class*="peppe-now_topbar"] h1{
+  font-size:clamp(58px,7vw,108px)!important;
+  line-height:.86!important;
+  letter-spacing:-.065em!important;
+  font-weight:650!important;
+  max-width:960px!important;
+  margin:12px 0 18px!important;
+}
+[class*="peppe-now_topbar"] p{font-size:17px!important;color:var(--peppe-muted)!important;max-width:760px!important}
+[class*="peppe-now_addButton"]{
+  border:1px solid var(--peppe-line)!important;
+  background:transparent!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+  color:#222!important;
+}
+
+/* Status hero */
+[class*="peppe-now_hero"]{grid-template-columns:1.45fr .75fr!important;gap:16px!important;margin-bottom:18px!important}
+[class*="peppe-now_heroMain"],[class*="peppe-now_weatherCard"],[class*="peppe-now_panel"],[class*="peppe-now_weekSection"]{
+  border:1px solid var(--peppe-line)!important;
+  background:rgba(251,250,246,.92)!important;
+  box-shadow:none!important;
+}
+[class*="peppe-now_heroMain"]{
+  min-height:330px!important;
+  border-radius:16px!important;
+  padding:34px 36px!important;
+  justify-content:flex-start!important;
+  background:linear-gradient(135deg,rgba(238,245,230,.92),rgba(251,250,246,.95) 62%)!important;
+}
+[class*="peppe-now_statusRow"]{background:transparent!important;border-radius:0!important;padding:0!important;margin-bottom:28px!important;gap:10px!important}
+[class*="peppe-now_liveDot"]{background:var(--peppe-green)!important;box-shadow:0 0 0 5px rgba(116,173,63,.12)!important}
+[class*="peppe-now_heroMain"] h2{font-size:clamp(40px,4.4vw,64px)!important;letter-spacing:-.055em!important;max-width:850px!important}
+[class*="peppe-now_heroMain"]>p{font-size:16px!important;color:#5f625b!important;max-width:760px!important}
+
+[class*="peppe-now_weatherCard"]{
+  border-radius:16px!important;
+  color:var(--peppe-ink)!important;
+  background:rgba(251,250,246,.94)!important;
+}
+[class*="peppe-now_weatherCard"] [class*="kicker"],
+[class*="peppe-now_weatherCard"] p,
+[class*="peppe-now_weatherCard"] small{color:var(--peppe-muted)!important}
+[class*="peppe-now_weatherStart"]{border-color:var(--peppe-line)!important}
+[class*="peppe-now_weatherStart"] span{color:var(--peppe-muted)!important}
+[class*="peppe-now_weatherGrid"] span{border-color:var(--peppe-line)!important;color:#242520!important;background:#f8f7f2!important}
+
+/* Horizon tabs */
+[class*="peppe-now_horizonHeader"]{gap:0!important;margin:0 0 18px!important;border:1px solid var(--peppe-line)!important;border-radius:14px!important;overflow:hidden!important;background:#faf9f5!important}
+[class*="peppe-now_horizonHeader"]>div{border:0!important;border-right:1px solid var(--peppe-line)!important;border-radius:0!important;background:transparent!important;padding:16px 18px!important}
+[class*="peppe-now_horizonHeader"]>div:last-child{border-right:0!important}
+
+/* Content cards */
+[class*="peppe-now_mainGrid"]{grid-template-columns:1.35fr .65fr!important;gap:16px!important}
+[class*="peppe-now_sideStack"]{gap:16px!important}
+[class*="peppe-now_panel"]{border-radius:16px!important;padding:26px!important}
+[class*="peppe-now_panel"] h2,[class*="peppe-now_weekSection"] h2{font-size:30px!important;letter-spacing:-.045em!important}
+[class*="peppe-now_contextButton"],[class*="peppe-now_primaryButton"],[class*="peppe-now_secondaryButton"]{border-radius:10px!important;box-shadow:none!important}
+[class*="peppe-now_primaryButton"]{background:#111!important;color:#fff!important}
+[class*="peppe-now_questionBox"],[class*="peppe-now_quietState"],[class*="peppe-now_contextGrid"]>div,[class*="peppe-now_bodyValues"]>div,[class*="peppe-now_nutritionHint"]{
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+[class*="peppe-now_quietState"]{background:var(--peppe-green-soft)!important;border-color:#d7e6c7!important}
+[class*="peppe-now_quietState"]>span{background:#dcebcf!important;color:#4f7b2a!important}
+
+/* Pain flow */
+[class*="peppe-now_painDetail"]{border-radius:14px!important;background:#171814!important}
+[class*="peppe-now_muscleGrid"] button{border-radius:9px!important}
+[class*="peppe-now_muscleGrid"] button[class*="muscleActive"]{background:#dcebcf!important;border-color:#dcebcf!important;color:#111!important}
+
+/* Integration and recovery visual cues */
+[class*="peppe-now_integrationList"]>div{border-color:var(--peppe-line)!important}
+[class*="peppe-now_kicker"]{color:#6d6f68!important}
+
+/* Side menu harmonized with mockup */
+.side-menu{background:var(--peppe-paper)!important;border-left:1px solid var(--peppe-line)!important;box-shadow:none!important}
+.side-menu nav a{border-bottom:1px solid var(--peppe-line)!important}
+
+@media(max-width:1079px){
+  [class*="peppe-now_shell"]{padding:76px 18px 110px!important}
+  [class*="peppe-now_topbar"]{padding-right:0}
+  [class*="peppe-now_hero"],[class*="peppe-now_mainGrid"]{grid-template-columns:1fr!important}
+  [class*="peppe-now_topbar"] h1{font-size:clamp(48px,12vw,78px)!important}
+  .global-nav.core-nav{border-top:1px solid var(--peppe-line)!important;background:rgba(246,244,238,.96)!important}
+  .menu-trigger{background:#111!important;border-radius:50%!important}
+  .menu-trigger span{background:#fff!important}
+}
+
+@media(max-width:620px){
+  [class*="peppe-now_shell"]{padding-left:12px!important;padding-right:12px!important}
+  [class*="peppe-now_topbar"] h1{font-size:48px!important}
+  [class*="peppe-now_heroMain"],[class*="peppe-now_weatherCard"],[class*="peppe-now_panel"]{border-radius:14px!important;padding:20px!important}
+  [class*="peppe-now_horizonHeader"]{grid-template-columns:1fr!important}
+  [class*="peppe-now_horizonHeader"]>div{border-right:0!important;border-bottom:1px solid var(--peppe-line)!important}
+  [class*="peppe-now_horizonHeader"]>div:last-child{border-bottom:0!important}
+}
