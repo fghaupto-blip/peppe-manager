@@ -1,0 +1,76 @@
+/* Body Map viewport fix
+   Keeps the dark body-intelligence canvas fully visible beside Peppe's desktop rail. */
+
+.bi-page,
+.bi-page * {
+  box-sizing: border-box;
+}
+
+.bi-page {
+  overflow-x: clip;
+}
+
+.bi-topline,
+.bi-hero,
+.bi-main-grid,
+.bi-lower-grid {
+  width: 100%;
+  min-width: 0;
+}
+
+.bi-main-grid > *,
+.bi-lower-grid > *,
+.bi-hero > * {
+  min-width: 0;
+}
+
+@media (min-width: 1080px) {
+  /* The global Peppe navigation uses a fixed 190px left rail on desktop.
+     Reserve that space instead of letting the rail cover the Body Map page. */
+  .bi-page {
+    margin-left: 190px;
+    width: calc(100vw - 190px);
+    max-width: calc(100vw - 190px);
+    padding-left: clamp(22px, 2.2vw, 36px);
+    padding-right: clamp(22px, 2.2vw, 36px);
+  }
+
+  .bi-topline,
+  .bi-hero,
+  .bi-main-grid,
+  .bi-lower-grid {
+    max-width: 1480px;
+  }
+}
+
+/* Once the rail is subtracted, medium desktop screens have less real content width
+   than the viewport breakpoint suggests. Switch earlier to the two-column layout. */
+@media (min-width: 1080px) and (max-width: 1370px) {
+  .bi-main-grid {
+    grid-template-columns: minmax(300px, .9fr) minmax(420px, 1.15fr);
+  }
+
+  .bi-detail {
+    grid-column: 1 / -1;
+  }
+
+  .bi-lower-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bi-trend {
+    grid-column: 1 / -1;
+  }
+
+  .bi-hero {
+    grid-template-columns: minmax(0, 1fr) 250px;
+  }
+}
+
+@media (max-width: 1079px) {
+  .bi-page {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
