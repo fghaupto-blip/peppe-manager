@@ -9,12 +9,35 @@
 
 /* Make the anatomy the hero rather than another dashboard card. */
 .bi-anatomy{background:linear-gradient(180deg,#07121c 0%,#050d14 100%);border-color:#1b303c}
-.bi-stage{min-height:650px;background:radial-gradient(ellipse at 50% 42%,rgba(105,212,87,.14) 0%,rgba(7,18,28,.35) 38%,#050c13 76%);border-color:#1b303c;box-shadow:inset 0 0 80px rgba(0,0,0,.28)}
-.bi-human{height:620px;width:min(100%,350px);filter:drop-shadow(0 24px 36px rgba(0,0,0,.55));transform:translateZ(0)}
-.bi-muscle{stroke-width:1.1;filter:saturate(1.08)}
-.bi-muscle:hover{filter:brightness(1.15) drop-shadow(0 0 7px rgba(123,226,100,.38))}
-.bi-muscle.selected{filter:url(#glow) brightness(1.08)}
+.bi-stage{min-height:650px;background-color:#061019;background-repeat:no-repeat;background-position:center;background-size:auto 94%;border-color:#1b303c;box-shadow:inset 0 0 95px rgba(0,0,0,.34);position:relative}
+
+/* Professional anatomical base artwork.
+   Front/back switch is driven by the existing Peppe toggle via :has().
+   Artwork: Termininja / Wikimedia Commons, CC BY-SA 3.0. */
+.bi-anatomy:has(.bi-toggle button:nth-child(1).active) .bi-stage{
+  background-image:
+    radial-gradient(ellipse at 50% 44%,rgba(108,230,92,.12),transparent 42%),
+    url('https://upload.wikimedia.org/wikipedia/commons/1/13/Muscular_system.svg');
+}
+.bi-anatomy:has(.bi-toggle button:nth-child(2).active) .bi-stage{
+  background-image:
+    radial-gradient(ellipse at 50% 44%,rgba(108,230,92,.12),transparent 42%),
+    url('https://upload.wikimedia.org/wikipedia/commons/9/90/Muscular_system-back.svg');
+}
+
+/* Keep the existing SVG as the interaction layer, but remove the old polygonal body.
+   Only the selected muscle becomes visible, creating the Peppe green hotspot over
+   the anatomical artwork while preserving all current click targets. */
+.bi-human{height:620px;width:min(100%,350px);filter:drop-shadow(0 24px 36px rgba(0,0,0,.55));transform:translateZ(0);position:relative;z-index:2}
+.bi-human>ellipse,.bi-human>path:not(.bi-muscle),.bi-midline{opacity:0}
+.bi-muscle{fill:transparent!important;stroke:transparent!important;stroke-width:0;cursor:pointer;opacity:.015;transition:opacity .16s ease,fill .16s ease,stroke .16s ease,filter .16s ease}
+.bi-muscle:hover{opacity:.22;fill:rgba(114,232,89,.22)!important;stroke:rgba(183,255,164,.72)!important;stroke-width:1.5;filter:drop-shadow(0 0 8px rgba(123,226,100,.55))}
+.bi-muscle.selected{opacity:.82;fill:rgba(79,226,83,.58)!important;stroke:#c5ffb7!important;stroke-width:2.4;filter:url(#glow) drop-shadow(0 0 14px rgba(82,236,91,.8))}
 .bi-selected{box-shadow:0 14px 35px rgba(0,0,0,.22)}
+
+/* Attribution required by the anatomical artwork licence. */
+.bi-stage:after{content:'Anatomía: Termininja · Wikimedia Commons · CC BY-SA 3.0';position:absolute;right:12px;bottom:10px;left:auto;width:auto;height:auto;background:none!important;color:#60727f;font-size:8px;letter-spacing:.02em;transform:none;z-index:4;pointer-events:none}
+.bi-stage:before{opacity:.25}
 
 /* Cards closer to the reference: quieter borders, stronger spacing, less visual noise. */
 .bi-card{border-color:#192b37;box-shadow:0 18px 55px rgba(0,0,0,.26)}
@@ -24,8 +47,6 @@
 .bi-readiness,.bi-reco,.bi-pattern-note{box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
 
 @media(min-width:1080px){
-  /* Peppe's desktop rail is fixed at 190px. Reserve it structurally so it can
-     never sit on top of questions, sliders or the anatomy canvas. */
   .bi-page{margin-left:190px;width:calc(100vw - 190px);max-width:calc(100vw - 190px);padding:24px clamp(26px,2.4vw,40px) 120px}
   .bi-topline,.bi-hero,.bi-main-grid,.bi-lower-grid{max-width:1540px;margin-left:auto;margin-right:auto}
   .bi-main-grid{grid-template-columns:minmax(285px,.82fr) minmax(455px,1.28fr) minmax(315px,.9fr);gap:16px;align-items:start}
@@ -33,8 +54,6 @@
   .bi-anatomy{position:relative;z-index:1}
 }
 
-/* Laptop widths: preserve anatomy prominence; detail moves below rather than
-   compressing the check-in underneath the navigation rail. */
 @media(min-width:1080px) and (max-width:1430px){
   .bi-main-grid{grid-template-columns:minmax(300px,.82fr) minmax(470px,1.18fr)}
   .bi-detail{grid-column:1/-1}
@@ -46,12 +65,11 @@
 @media(min-width:1080px) and (max-width:1220px){
   .bi-page{padding-left:24px;padding-right:24px}
   .bi-main-grid{grid-template-columns:minmax(285px,.78fr) minmax(430px,1.22fr)}
-  .bi-stage{min-height:610px}
+  .bi-stage{min-height:610px;background-size:auto 92%}
   .bi-human{height:580px}
 }
 
 @media(max-width:1079px){
-  /* Mobile/tablet uses the global bottom navigation; content remains full width. */
   .bi-page{margin-left:0;width:100%;max-width:100%;padding-bottom:118px}
   .bi-main-grid,.bi-lower-grid{grid-template-columns:1fr}
   .bi-detail,.bi-trend{grid-column:auto}
@@ -60,7 +78,7 @@
 
 @media(max-width:760px){
   .bi-page{padding-left:12px;padding-right:12px}
-  .bi-stage{height:590px;min-height:590px}
+  .bi-stage{height:590px;min-height:590px;background-size:auto 90%}
   .bi-human{height:555px;width:min(100%,315px)}
   .bi-card{border-radius:20px}
 }
