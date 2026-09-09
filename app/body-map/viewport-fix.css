@@ -1,76 +1,66 @@
-/* Body Map viewport fix
-   Keeps the dark body-intelligence canvas fully visible beside Peppe's desktop rail. */
+/* Body Map — premium viewport/layout layer
+   Keeps Peppe's global navigation outside the interactive experience and
+   gives the body-map the visual hierarchy of the approved reference. */
 
-.bi-page,
-.bi-page * {
-  box-sizing: border-box;
+.bi-page,.bi-page *{box-sizing:border-box}
+.bi-page{overflow-x:clip;isolation:isolate;background:#050c13}
+.bi-topline,.bi-hero,.bi-main-grid,.bi-lower-grid{width:100%;min-width:0}
+.bi-main-grid>*,.bi-lower-grid>*,.bi-hero>*{min-width:0}
+
+/* Make the anatomy the hero rather than another dashboard card. */
+.bi-anatomy{background:linear-gradient(180deg,#07121c 0%,#050d14 100%);border-color:#1b303c}
+.bi-stage{min-height:650px;background:radial-gradient(ellipse at 50% 42%,rgba(105,212,87,.14) 0%,rgba(7,18,28,.35) 38%,#050c13 76%);border-color:#1b303c;box-shadow:inset 0 0 80px rgba(0,0,0,.28)}
+.bi-human{height:620px;width:min(100%,350px);filter:drop-shadow(0 24px 36px rgba(0,0,0,.55));transform:translateZ(0)}
+.bi-muscle{stroke-width:1.1;filter:saturate(1.08)}
+.bi-muscle:hover{filter:brightness(1.15) drop-shadow(0 0 7px rgba(123,226,100,.38))}
+.bi-muscle.selected{filter:url(#glow) brightness(1.08)}
+.bi-selected{box-shadow:0 14px 35px rgba(0,0,0,.22)}
+
+/* Cards closer to the reference: quieter borders, stronger spacing, less visual noise. */
+.bi-card{border-color:#192b37;box-shadow:0 18px 55px rgba(0,0,0,.26)}
+.bi-checkin,.bi-anatomy,.bi-detail,.bi-exercises,.bi-pattern,.bi-trend{padding:22px}
+.bi-card-head h2,.bi-section-title h2{line-height:1.08}
+.bi-metric{padding:15px 0 11px}
+.bi-readiness,.bi-reco,.bi-pattern-note{box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+
+@media(min-width:1080px){
+  /* Peppe's desktop rail is fixed at 190px. Reserve it structurally so it can
+     never sit on top of questions, sliders or the anatomy canvas. */
+  .bi-page{margin-left:190px;width:calc(100vw - 190px);max-width:calc(100vw - 190px);padding:24px clamp(26px,2.4vw,40px) 120px}
+  .bi-topline,.bi-hero,.bi-main-grid,.bi-lower-grid{max-width:1540px;margin-left:auto;margin-right:auto}
+  .bi-main-grid{grid-template-columns:minmax(285px,.82fr) minmax(455px,1.28fr) minmax(315px,.9fr);gap:16px;align-items:start}
+  .bi-lower-grid{gap:16px}
+  .bi-anatomy{position:relative;z-index:1}
 }
 
-.bi-page {
-  overflow-x: clip;
+/* Laptop widths: preserve anatomy prominence; detail moves below rather than
+   compressing the check-in underneath the navigation rail. */
+@media(min-width:1080px) and (max-width:1430px){
+  .bi-main-grid{grid-template-columns:minmax(300px,.82fr) minmax(470px,1.18fr)}
+  .bi-detail{grid-column:1/-1}
+  .bi-lower-grid{grid-template-columns:1fr 1fr}
+  .bi-trend{grid-column:1/-1}
+  .bi-hero{grid-template-columns:minmax(0,1fr) 260px}
 }
 
-.bi-topline,
-.bi-hero,
-.bi-main-grid,
-.bi-lower-grid {
-  width: 100%;
-  min-width: 0;
+@media(min-width:1080px) and (max-width:1220px){
+  .bi-page{padding-left:24px;padding-right:24px}
+  .bi-main-grid{grid-template-columns:minmax(285px,.78fr) minmax(430px,1.22fr)}
+  .bi-stage{min-height:610px}
+  .bi-human{height:580px}
 }
 
-.bi-main-grid > *,
-.bi-lower-grid > *,
-.bi-hero > * {
-  min-width: 0;
+@media(max-width:1079px){
+  /* Mobile/tablet uses the global bottom navigation; content remains full width. */
+  .bi-page{margin-left:0;width:100%;max-width:100%;padding-bottom:118px}
+  .bi-main-grid,.bi-lower-grid{grid-template-columns:1fr}
+  .bi-detail,.bi-trend{grid-column:auto}
+  .bi-anatomy{order:1}.bi-checkin{order:0}.bi-detail{order:2}
 }
 
-@media (min-width: 1080px) {
-  /* The global Peppe navigation uses a fixed 190px left rail on desktop.
-     Reserve that space instead of letting the rail cover the Body Map page. */
-  .bi-page {
-    margin-left: 190px;
-    width: calc(100vw - 190px);
-    max-width: calc(100vw - 190px);
-    padding-left: clamp(22px, 2.2vw, 36px);
-    padding-right: clamp(22px, 2.2vw, 36px);
-  }
-
-  .bi-topline,
-  .bi-hero,
-  .bi-main-grid,
-  .bi-lower-grid {
-    max-width: 1480px;
-  }
-}
-
-/* Once the rail is subtracted, medium desktop screens have less real content width
-   than the viewport breakpoint suggests. Switch earlier to the two-column layout. */
-@media (min-width: 1080px) and (max-width: 1370px) {
-  .bi-main-grid {
-    grid-template-columns: minmax(300px, .9fr) minmax(420px, 1.15fr);
-  }
-
-  .bi-detail {
-    grid-column: 1 / -1;
-  }
-
-  .bi-lower-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .bi-trend {
-    grid-column: 1 / -1;
-  }
-
-  .bi-hero {
-    grid-template-columns: minmax(0, 1fr) 250px;
-  }
-}
-
-@media (max-width: 1079px) {
-  .bi-page {
-    margin-left: 0;
-    width: 100%;
-    max-width: 100%;
-  }
+@media(max-width:760px){
+  .bi-page{padding-left:12px;padding-right:12px}
+  .bi-stage{height:590px;min-height:590px}
+  .bi-human{height:555px;width:min(100%,315px)}
+  .bi-card{border-radius:20px}
 }
