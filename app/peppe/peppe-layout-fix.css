@@ -1,0 +1,8 @@
+.peppe-route{min-height:100vh;}
+@media (min-width:1080px){
+  .peppe-route{margin-left:190px;width:calc(100vw - 190px);overflow-x:hidden;}
+  .peppe-route>main{width:100%;max-width:none;margin:0!important;padding-left:34px!important;padding-right:34px!important;}
+}
+@media (max-width:1079px){
+  .peppe-route{margin-left:0;width:100%;}
+}
