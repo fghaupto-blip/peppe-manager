@@ -1,10 +1,49 @@
 /* Responsive navigation hardening */
 .menu-backdrop{position:fixed!important;inset:0!important;z-index:9998!important;border-radius:0!important;background:rgba(10,12,10,.26)!important;backdrop-filter:none!important;padding:0!important}
-.side-menu{position:fixed!important;z-index:9999!important;top:0!important;right:0!important;height:100dvh!important;max-height:100dvh!important;width:min(520px,100vw)!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important}
-.side-menu-head{position:sticky!important;top:0!important;z-index:2!important}
+.side-menu{position:fixed!important;z-index:9999!important;top:0!important;right:0!important;height:100dvh!important;max-height:100dvh!important;width:min(520px,100vw)!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;background:#f7f6f0!important;box-shadow:-24px 0 70px rgba(13,18,14,.18)!important}
+.side-menu-head{position:sticky!important;top:0!important;z-index:2!important;background:rgba(247,246,240,.96)!important;backdrop-filter:blur(14px)!important}
 .menu-trigger{position:fixed!important;z-index:10000!important}
 .side-menu nav{display:block!important}
 .side-menu nav a,.side-menu-signout{display:block!important;width:100%!important}
 .side-menu nav a{min-height:72px!important}
 .global-nav{z-index:5000!important}
-@media(max-width:700px){.side-menu{width:100vw!important}.side-menu nav a{min-height:68px!important}}
+.mobile-edge-trigger,.mobile-edge-zone,.mobile-core-links,.side-menu-divider{display:none}
+
+@media(max-width:700px){
+  /* Mobile: remove the overcrowded horizontal footer navigation. */
+  .global-nav.core-nav{display:none!important}
+  .menu-trigger{display:none!important}
+
+  /* Drawer comes from the left, matching the physical gesture. */
+  .side-menu{left:0!important;right:auto!important;width:min(88vw,390px)!important;border-radius:0 28px 28px 0!important;box-shadow:26px 0 70px rgba(13,18,14,.20)!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important;animation:peppeDrawerIn .24s cubic-bezier(.2,.75,.25,1)!important}
+  .side-menu nav a{min-height:58px!important}
+  .side-menu-head{padding-top:max(22px,env(safe-area-inset-top))!important}
+
+  /* Visible edge cue: discreet but always discoverable. */
+  .mobile-edge-trigger{display:flex;position:fixed;left:0;top:46%;transform:translateY(-50%);z-index:9000;width:29px;height:64px;border:0;border-radius:0 18px 18px 0;background:#111;color:#fff;align-items:center;justify-content:center;padding:0;box-shadow:8px 8px 24px rgba(0,0,0,.14);touch-action:manipulation}
+  .mobile-edge-trigger span{font-size:31px;line-height:1;transform:translateX(-1px);animation:peppeEdgeNudge 1.8s ease-in-out infinite}
+  .mobile-edge-trigger:active{width:34px}
+
+  /* Invisible swipe target along the left edge. */
+  .mobile-edge-zone{display:block;position:fixed;left:0;top:0;bottom:0;width:18px;z-index:8999;touch-action:pan-y}
+
+  .mobile-core-links{display:block!important;padding:8px 14px 10px!important}
+  .mobile-core-links a{display:grid!important;grid-template-columns:30px 1fr 22px!important;align-items:center!important;gap:12px!important;min-height:56px!important;padding:10px 12px!important;border-radius:15px!important;text-decoration:none!important;color:#151817!important;border:1px solid transparent!important}
+  .mobile-core-links a.active{background:#fff!important;border-color:rgba(19,25,21,.10)!important;box-shadow:0 6px 18px rgba(14,18,15,.06)!important}
+  .drawer-link-icon{font-size:17px;opacity:.78;text-align:center}
+  .drawer-link-copy strong{font-size:16px;font-weight:700}
+  .drawer-chevron{font-size:23px;opacity:.38;text-align:right}
+  .side-menu-divider{display:block;height:1px;margin:4px 22px 14px;background:rgba(22,27,23,.10)}
+  .secondary-links{padding:0 14px 16px!important}
+  .secondary-links a{padding:14px 12px!important;border-radius:14px!important}
+  .secondary-links a span{font-weight:700!important}
+  .secondary-links a small{display:block!important;margin-top:4px!important;line-height:1.35!important;color:#737b75!important}
+  .side-menu-signout{margin-top:8px!important;border-radius:14px!important}
+
+  body{padding-bottom:0!important}
+}
+
+@keyframes peppeDrawerIn{from{transform:translateX(-104%);opacity:.7}to{transform:translateX(0);opacity:1}}
+@keyframes peppeEdgeNudge{0%,70%,100%{transform:translateX(-2px)}82%{transform:translateX(3px)}90%{transform:translateX(0)}}
+
+@media(prefers-reduced-motion:reduce){.side-menu{animation:none!important}.mobile-edge-trigger span{animation:none!important}}
